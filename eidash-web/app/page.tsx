@@ -38,7 +38,9 @@ export default function Home() {
   const loginButton = (
     <a
       className="btn"
-      href={`${API_BASE}/api/oidc/login?redirect_to=http%3A%2F%2Flocalhost%3A3000%2F`}
+      href={`${API_BASE}/api/oidc/login?redirect_to=${encodeURIComponent(
+        window.location.href
+      )}`}
     >
       Login
     </a>
