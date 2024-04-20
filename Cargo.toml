@@ -1,0 +1,33 @@
+[workspace]
+members = ["eidash*", "ei-proto"]
+exclude = ["eidash-web"]
+resolver = "2"
+
+[workspace.package]
+edition = "2021"
+homepage = "https://github.com/fyko/merriam-webster"
+repository = "https://github.com/fyko/merriam-webster"
+categories = ["api-bindings", "asynchronous", "web-programming::http-client"]
+keywords = ["merriam", "webster", "dictionary"]
+license = "MIT OR Apache-2.0"
+authors = ["Carter Himmel <carter@fyko.net>"]
+
+[workspace.dependencies]
+eidash-id = { path = "./eidash-id" }
+ei-proto = { path = "./ei-proto" }
+
+serde = { features = ["derive"], version = "1" }
+sqlx = { version = "0.7", features = [
+	"runtime-tokio-rustls",
+	"postgres",
+	"uuid",
+	"time",
+	"json",
+] }
+once_cell = "1"
+
+[profile.release]
+strip = true
+opt-level = "z"
+lto = true
+codegen-units = 1

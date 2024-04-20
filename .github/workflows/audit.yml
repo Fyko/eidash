@@ -1,0 +1,39 @@
+name: Security audit
+
+on:
+  schedule:
+    - cron: "0 0 * * *"
+  push:
+    paths:
+      - "**/Cargo.toml"
+      - "**/Cargo.lock"
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          fetch-depth: 0
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Register problem matchers
+        uses: r7kamura/rust-problem-matchers@v1
+
+      - name: Install Rust
+        run: rustup toolchain install stable --profile minimal
+
+      - name: Setup Rust cache
+        uses: Swatinem/rust-cache@v2
+        with:
+          cache-on-failure: true
+
+      - name: Install Cargo Make
+        uses: davidB/rust-cargo-make@v1
+
+      - name: Run security audit
+        run: cargo make audit
