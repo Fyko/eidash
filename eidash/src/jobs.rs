@@ -18,7 +18,7 @@ pub async fn start(state: AppState) {
     let mut scheduler = AsyncScheduler::new();
 
     let state_clone = state.clone();
-    scheduler.every(10.minutes()).run(move || {
+    scheduler.every(5.minutes()).run(move || {
         let state = state_clone.clone();
         async move {
             fetch_saves(&state).await.unwrap();
@@ -58,7 +58,7 @@ async fn fetch_saves(state: &AppState) -> Result<()> {
             async move {
                 let permit = semaphore_clone.acquire().await.unwrap();
 
-                tracing::trace!(user = user.user_id, "fetching save");
+                tracing::debug!(user = user.user_id, "fetching save");
                 let save = match first_contact(&user.ei_id.expect("infallible")).await {
                     Ok(save) => save,
                     Err(e) => {
