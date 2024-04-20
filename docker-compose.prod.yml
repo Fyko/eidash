@@ -84,3 +84,8 @@ volumes:
   redis-storage:
   clickhouse-storage:
   clickhouse-logs:
+
+networks:
+  default:
+  caddy_network:
+    external: true
