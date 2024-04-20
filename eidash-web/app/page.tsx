@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
+const API_BASE = process.env.NEXT_PUBLIC_API_BASE;
 
 interface APIUser {
   id: string;
@@ -18,7 +18,7 @@ export default function Home() {
   useEffect(() => {
     async function fetchMe() {
       try {
-        const res = await fetch(`${API_URL}/api/users/@me`, {
+        const res = await fetch(`${API_BASE}/api/users/@me`, {
           credentials: "include",
         });
         if (res.status > 200) {
@@ -38,7 +38,7 @@ export default function Home() {
   const loginButton = (
     <a
       className="btn"
-      href={`${API_URL}/api/oidc/login?redirect_to=http%3A%2F%2Flocalhost%3A3000%2F`}
+      href={`${API_BASE}/api/oidc/login?redirect_to=http%3A%2F%2Flocalhost%3A3000%2F`}
     >
       Login
     </a>
@@ -51,7 +51,7 @@ export default function Home() {
     e.preventDefault();
     setStatus("submitting");
     try {
-      const res = await fetch(`${API_URL}/api/users/@me/submit_eid`, {
+      const res = await fetch(`${API_BASE}/api/users/@me/submit_eid`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
