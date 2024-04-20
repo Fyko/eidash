@@ -80,8 +80,7 @@ async fn fetch_saves(state: &AppState) -> Result<()> {
 
                 let Some(backup_time) = backup
                     .settings
-                    .map(|s| s.last_backup_time)
-                    .flatten()
+                    .and_then(|s| s.last_backup_time)
                     .map(|t| t as i64)
                 else {
                     tracing::error!(user = user.user_id, "no backup_time found");
@@ -93,7 +92,7 @@ async fn fetch_saves(state: &AppState) -> Result<()> {
                         "select ?fields from basic_save_v1 where user_id = ? and backup_time = ?",
                     )
                     .bind(&user.user_id)
-                    .bind(&backup_time)
+                    .bind(backup_time)
                     .fetch_optional::<BasicSaveV1Row>()
                     .await
                     .expect("fetching previous save failed");
@@ -168,8 +167,7 @@ fn get_epic_research_level(game: &Game, id: &str) -> u32 {
     game.epic_research
         .iter()
         .find(|r| r.id == Some(id.to_string()))
-        .map(|r| r.level.map_or(0, |l| l))
-        .unwrap_or(0)
+        .map_or(0, |r| r.level.map_or(0, |l| l))
 }
 
 struct EarningsBonusData {

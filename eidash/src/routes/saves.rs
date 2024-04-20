@@ -3,14 +3,10 @@ use axum::routing::get;
 use axum::{Json, Router};
 use axum_core::response::{IntoResponse, Response};
 use eidash_id::markers::UserId;
-use time::format_description::well_known::Iso8601;
-use time::OffsetDateTime;
 
 use crate::auth::AuthSession;
 use crate::clickhouse::BasicSaveV1Row;
-use crate::db::user::get_by_user_id;
 use crate::error::{AxumResult, Error};
-use crate::models::api_user::APIUser;
 use crate::state::AppState;
 
 pub fn router() -> Router<AppState> {

@@ -16,7 +16,7 @@ on:
 
 env:
   slug: ghcr.io/fyko/eidash-api
-  dockerfile: ./eidash-api/Dockerfile
+  dockerfile: ./eidash/Dockerfile
 
 jobs:
   publish:

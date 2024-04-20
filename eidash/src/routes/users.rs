@@ -1,8 +1,7 @@
-use axum::extract::{Path, State};
+use axum::extract::State;
 use axum::routing::{get, post};
 use axum::{Json, Router};
 use axum_core::response::{IntoResponse, Response};
-use eidash_id::markers::UserId;
 
 use crate::auth::AuthSession;
 use crate::db::user::{get_by_user_id, UserEntity};
