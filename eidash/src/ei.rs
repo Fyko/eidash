@@ -1,5 +1,5 @@
 use ei_proto::{
-    grpc_request, BasicRequestInfo, BoxDynError, EggIncFirstContactRequest,
+    backup::Game, grpc_request, BasicRequestInfo, BoxDynError, EggIncFirstContactRequest,
     EggIncFirstContactResponse,
 };
 
@@ -26,4 +26,26 @@ pub async fn first_contact(ei_id: &str) -> Result<EggIncFirstContactResponse, Bo
     };
 
     grpc_request("/ei/bot_first_contact", request).await
+}
+
+pub fn get_epic_research_level(game: &Game, id: &str) -> u32 {
+    game.epic_research
+        .iter()
+        .find(|r| r.id == Some(id.to_string()))
+        .map_or(0, |r| r.level.map_or(0, |l| l))
+}
+
+pub struct EarningsBonusData {
+    pub soul_eggs: f64,
+    pub eggs_of_prophecy: u64,
+    pub er_prophecy_bonus_level: u32,
+    pub er_soul_food_level: u32,
+}
+
+pub fn calculate_earnings_bonus(data: &EarningsBonusData) -> f64 {
+    let soul_egg_bonus = 0.1 + (data.er_soul_food_level as f64) * 0.01;
+    let prophecy_egg_bonus = 0.05 + (data.er_prophecy_bonus_level as f64) * 0.01;
+
+    (data.soul_eggs * soul_egg_bonus)
+        * (1.0 + prophecy_egg_bonus).powf(data.eggs_of_prophecy as f64)
 }

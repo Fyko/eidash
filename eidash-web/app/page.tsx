@@ -1,4 +1,5 @@
 "use client";
+import { BasicSaveV1Row } from "@/components/SoulEggsChart";
 import { useEffect, useState } from "react";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE;
@@ -15,7 +16,29 @@ export default function Home() {
   const [user, setUser] = useState<APIUser | null | undefined>(undefined);
   const [eiId, setEiId] = useState(user?.ei_id);
   const [location, setLocation] = useState("");
+  const [fetchedGames, setFetchedGames] = useState<BasicSaveV1Row[]>([]);
   useEffect(() => void setLocation(window.location.href), []);
+
+  useEffect(() => {
+    async function fetchGames() {
+      try {
+        const res = await fetch(
+          `${API_BASE}/api/users/@me/basic-save-v1?timestamp_gte=${0}&timestamp_lt=${Date.now()}`,
+          { credentials: "include" }
+        );
+        if (res.status > 200) {
+          return setFetchedGames([]);
+        }
+
+        const games = (await res.json()) as BasicSaveV1Row[];
+        setFetchedGames(games);
+      } catch {
+        setFetchedGames([]);
+      }
+    }
+
+    fetchGames();
+  }, [user]);
 
   useEffect(() => {
     async function fetchMe() {
@@ -120,6 +143,7 @@ export default function Home() {
           )}
         </form>
         <pre>{JSON.stringify(user, null, 2)}</pre>
+        <pre className="pt-5">{JSON.stringify(fetchedGames, null, 2)}</pre>
       </div>
     );
   }

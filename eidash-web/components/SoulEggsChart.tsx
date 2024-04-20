@@ -8,7 +8,7 @@ import "chartjs-adapter-date-fns";
 // notes
 // - https://github.com/chrisnieves60/retropricer/blob/a20856d3b6eb612918e9bbd0111f4b64816b596c/components/PriceGraph.tsx#L2
 
-interface BasicSaveV1Row {
+export interface BasicSaveV1Row {
   user_id: string;
   computed_earnings_bonus: number;
   soul_eggs: number;

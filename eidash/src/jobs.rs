@@ -2,7 +2,6 @@ use std::{sync::Arc, time::Duration};
 
 use anyhow::Result;
 use clokwerk::{AsyncScheduler, TimeUnits};
-use ei_proto::backup::Game;
 use futures_util::TryStreamExt;
 use time::OffsetDateTime;
 use tokio::{
@@ -10,7 +9,11 @@ use tokio::{
     time::sleep,
 };
 
-use crate::{clickhouse::BasicSaveV1Row, ei::first_contact, state::AppState};
+use crate::{
+    clickhouse::BasicSaveV1Row,
+    ei::{calculate_earnings_bonus, first_contact, get_epic_research_level, EarningsBonusData},
+    state::AppState,
+};
 
 pub async fn start(state: AppState) {
     tracing::info!("Starting clokwerk");
@@ -161,26 +164,4 @@ async fn fetch_saves(state: &AppState) -> Result<()> {
     insert_handle.await.unwrap();
 
     Ok(())
-}
-
-fn get_epic_research_level(game: &Game, id: &str) -> u32 {
-    game.epic_research
-        .iter()
-        .find(|r| r.id == Some(id.to_string()))
-        .map_or(0, |r| r.level.map_or(0, |l| l))
-}
-
-struct EarningsBonusData {
-    soul_eggs: f64,
-    eggs_of_prophecy: u64,
-    er_prophecy_bonus_level: u32,
-    er_soul_food_level: u32,
-}
-
-fn calculate_earnings_bonus(data: &EarningsBonusData) -> f64 {
-    let soul_egg_bonus = 0.1 + (data.er_soul_food_level as f64) * 0.01;
-    let prophecy_egg_bonus = 0.05 + (data.er_prophecy_bonus_level as f64) * 0.01;
-
-    (data.soul_eggs * soul_egg_bonus)
-        * (1.0 + prophecy_egg_bonus).powf(data.eggs_of_prophecy as f64)
 }
