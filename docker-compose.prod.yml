@@ -1,16 +1,22 @@
 version: "3.9"
 
 services:
-  api:
+  eidash_api:
     image: ghcr.io/fyko/eidash-api:latest
     restart: unless-stopped
+    networks:
+      - default
+      - caddy_network
     ports:
       - "33939:33939"
     env_file:
       - .env.prod
 
-  web:
+  eidash_web:
     image: ghcr.io/fyko/eidash-web:latest
+    networks:
+      - default
+      - caddy_network
     ports:
       - "3000:3000"
     restart: unless-stopped
