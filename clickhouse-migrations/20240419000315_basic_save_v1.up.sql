@@ -6,5 +6,6 @@ create table basic_save_v1 (
 	eggs_of_prophecy UInt64,
 	er_soul_food_level UInt32,
 	er_prophecy_bonus_level UInt32,
-	timestamp DateTime
+	timestamp DateTime,
+	backup_time DateTime
 ) engine = MergeTree() primary key (user_id, timestamp);
