@@ -1,0 +1,19 @@
+version: "3.9"
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: eidash/Dockerfile
+    restart: unless-stopped
+
+  web:
+    build:
+      context: eidash-web
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: "http://localhost:39339"
+        VERCEL_URL: "http://localhost:3000"
+    ports:
+      - "3000:3000"
+    restart: unless-stopped

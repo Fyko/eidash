@@ -10,5 +10,5 @@ target/
 *.pdb
 
 .env
-.envrc
+.envrc*
 ei-proto/src/ei.rs

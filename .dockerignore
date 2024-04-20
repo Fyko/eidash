@@ -1,0 +1,8 @@
+target
+docker
+datagrip
+migrations
+clickhouse-migrations
+.vscode
+.github
+.envrc*

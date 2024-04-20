@@ -154,6 +154,4 @@ volumes:
   postgres-storage:
   redis-storage:
   clickhouse-storage:
-    driver: local
   clickhouse-logs:
-    driver: local

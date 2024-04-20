@@ -59,6 +59,9 @@ jobs:
           file: ${{ env.dockerfile }}
           push: true
           tags: ${{ steps.meta.outputs.tags }}
+          build-args: |
+            NEXT_PUBLIC_API_URL=https://eidash.fyko.net/api
+            VERCEL_URL=https://eidash.fyko.net
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
 

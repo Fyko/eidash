@@ -45,7 +45,10 @@ ei-proto.workspace = true
 dotenvy = "0.15.7"
 uuid = { version = "1.5.0", features = ["v1", "v4", "fast-rng", "serde"] }
 time = "0.3.30"
-reqwest = { version = "0.11.22", features = ["multipart"] }
+reqwest = { version = "0.11.22", features = [
+  "multipart",
+  "rustls-tls-webpki-roots",
+] }
 tower-sessions = { version = "0.7.0", features = ["redis-store", "moka-store"] }
 hyper-util = { version = "0.1.1", features = ["tokio"] }
 hyper = { version = "1.0.1", features = ["server"] }

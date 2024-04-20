@@ -1,0 +1,88 @@
+{
+    "db_name": "PostgreSQL",
+    "query": "\n\t\t\t\tselect * from \"user\" where user_id = $1;\n\t\t\t",
+    "describe": {
+        "columns": [
+            {
+                "ordinal": 0,
+                "name": "user_id",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 1,
+                "name": "ei_id",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 2,
+                "name": "openid",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 3,
+                "name": "email",
+                "type_info": "Varchar"
+            },
+            {
+                "ordinal": 4,
+                "name": "username",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 5,
+                "name": "points",
+                "type_info": "Int4"
+            },
+            {
+                "ordinal": 6,
+                "name": "token_type",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 7,
+                "name": "access_token",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 8,
+                "name": "refresh_token",
+                "type_info": "Text"
+            },
+            {
+                "ordinal": 9,
+                "name": "expires_at",
+                "type_info": "Timestamptz"
+            },
+            {
+                "ordinal": 10,
+                "name": "created_at",
+                "type_info": "Timestamptz"
+            },
+            {
+                "ordinal": 11,
+                "name": "updated_at",
+                "type_info": "Timestamptz"
+            }
+        ],
+        "parameters": {
+            "Left": [
+                "Text"
+            ]
+        },
+        "nullable": [
+            false,
+            true,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false
+        ]
+    },
+    "hash": "c053a728d41932edff1ed906f33fead1a188216f054aabe62f330f9fe699bf60"
+}

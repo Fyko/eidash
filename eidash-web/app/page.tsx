@@ -1,6 +1,7 @@
 "use client";
-import SoulEggsChart from "@/components/SoulEggsChart";
 import { useEffect, useState } from "react";
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 interface APIUser {
   id: string;
@@ -11,27 +12,25 @@ interface APIUser {
 }
 
 export default function Home() {
-  const onLoginClick = async () => {
-    const url = await fetch(
-      "http://localhost:33939/api/oidc/login?redirect_to=http%3A%2F%2Flocalhost%3A3000%2F"
-    );
-    const data = await url.text();
-  };
   const [user, setUser] = useState<APIUser | null | undefined>(undefined);
   const [eiId, setEiId] = useState(user?.ei_id);
 
   useEffect(() => {
     async function fetchMe() {
-      const res = await fetch("http://localhost:33939/api/users/@me", {
-        credentials: "include",
-      });
-      if (res.status > 200) {
-        return setUser(null);
-      }
+      try {
+        const res = await fetch(`${API_URL}/api/users/@me`, {
+          credentials: "include",
+        });
+        if (res.status > 200) {
+          return setUser(null);
+        }
 
-      const user = (await res.json()) as APIUser;
-      setUser(user);
-      setEiId(user.ei_id);
+        const user = (await res.json()) as APIUser;
+        setUser(user);
+        setEiId(user.ei_id);
+      } catch {
+        setUser(null);
+      }
     }
     fetchMe();
   }, []);
@@ -39,7 +38,7 @@ export default function Home() {
   const loginButton = (
     <a
       className="btn"
-      href="http://localhost:33939/api/oidc/login?redirect_to=http%3A%2F%2Flocalhost%3A3000%2F"
+      href={`${API_URL}/api/oidc/login?redirect_to=http%3A%2F%2Flocalhost%3A3000%2F`}
     >
       Login
     </a>
@@ -52,17 +51,14 @@ export default function Home() {
     e.preventDefault();
     setStatus("submitting");
     try {
-      const res = await fetch(
-        "http://localhost:33939/api/users/@me/submit_eid",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ ei_id: eiId }),
-          credentials: "include",
-        }
-      );
+      const res = await fetch(`${API_URL}/api/users/@me/submit_eid`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ ei_id: eiId }),
+        credentials: "include",
+      });
       const json = await res.json();
 
       if (res.status > 200) {
@@ -131,7 +127,7 @@ export default function Home() {
       <div className="max-w-4xl">
         <h1 className="text-4xl font-bold">EIDash</h1>
         <div className="flex flex-col items-center space-y-4 w-96 h-96">
-          {inner}
+          {inner || <p>Something went wrong</p>}
         </div>
       </div>
     </main>
