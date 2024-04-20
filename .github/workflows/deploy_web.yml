@@ -55,7 +55,7 @@ jobs:
       - name: Build
         uses: docker/build-push-action@v5
         with:
-          context: .
+          context: eidash-web
           file: ${{ env.dockerfile }}
           push: true
           tags: ${{ steps.meta.outputs.tags }}
