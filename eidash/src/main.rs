@@ -27,6 +27,8 @@ async fn main() -> anyhow::Result<()> {
         .init();
 
     let db = create_db().await;
+    sqlx::migrate!("../migrations").run(&*db).await?;
+
     let oidc_client = Arc::from(
         create_oidc_client(
             CONFIG.oidc_issuer.clone(),
