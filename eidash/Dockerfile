@@ -8,7 +8,7 @@ COPY . .
 RUN cargo chef prepare --recipe-path recipe.json
 
 FROM chef AS builder
-ENV PROTOBUF_VER="25.2"
+ENV PROTOBUF_VER="26.1"
 ENV SQLX_OFFLINE=true
 ENV RUSTFLAGS=-Ctarget-feature=-crt-static
 
