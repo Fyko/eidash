@@ -27,5 +27,5 @@ RUN cargo build --release --bin eidash --no-default-features
 FROM debian:bookworm AS runtime
 WORKDIR /app
 COPY --from=builder /app/target/release/eidash .
-RUN apt update && apt install -y libssl-dev && rm -rf /var/lib/apt/lists/*
+RUN apt update && apt install -y libssl-dev ca-certificates && rm -rf /var/lib/apt/lists/*
 CMD ["/app/eidash"]
