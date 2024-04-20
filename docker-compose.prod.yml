@@ -27,8 +27,6 @@ services:
       timeout: 3s
     volumes:
       - redis-storage:/data
-    ports:
-      - "6379:6379"
 
   postgres:
     image: postgres:16-alpine
@@ -39,8 +37,6 @@ services:
     volumes:
       - postgres-storage:/var/lib/postgresql/data
       - ./docker/postgres/postgresql.conf/:/etc/postgresql/postgresql.conf
-    ports:
-      - "${POSTGRES_PORT:-5432}:5432"
     restart: unless-stopped
     healthcheck:
       test:
@@ -68,8 +64,6 @@ services:
       - ./docker/clickhouse/clickhouse-user-config.xml:/etc/clickhouse-server/users.d/logging.xml:ro
     healthcheck:
       test: wget --no-verbose --tries=1 --spider http://localhost:8123/ping || exit 1
-    ports:
-      - 8123:8123
     ulimits:
       nofile:
         soft: 262144
