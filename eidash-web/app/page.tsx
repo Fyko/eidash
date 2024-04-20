@@ -14,6 +14,8 @@ interface APIUser {
 export default function Home() {
   const [user, setUser] = useState<APIUser | null | undefined>(undefined);
   const [eiId, setEiId] = useState(user?.ei_id);
+  const [location, setLocation] = useState("");
+  useEffect(() => void setLocation(window.location.href), []);
 
   useEffect(() => {
     async function fetchMe() {
@@ -34,17 +36,6 @@ export default function Home() {
     }
     fetchMe();
   }, []);
-
-  const loginButton = (
-    <a
-      className="btn"
-      href={`${API_BASE}/api/oidc/login?redirect_to=${encodeURIComponent(
-        window.location.href
-      )}`}
-    >
-      Login
-    </a>
-  );
 
   const [status, setStatus] = useState("typing");
   const [error, setError] = useState<Error | null>(null);
@@ -86,7 +77,16 @@ export default function Home() {
     inner = <p>Loading...</p>;
   }
   if (user === null) {
-    inner = loginButton;
+    inner = (
+      <a
+        className="btn"
+        href={`${API_BASE}/api/oidc/login?redirect_to=${encodeURIComponent(
+          location
+        )}`}
+      >
+        Login
+      </a>
+    );
   }
   if (user !== null) {
     inner = (
