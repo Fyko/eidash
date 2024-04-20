@@ -10,6 +10,7 @@ on:
 env:
   CARGO_TERM_COLOR: always
   CARGO_REGISTRIES_CRATES_IO_PROTOCOL: git
+  PROTOC_VERSION: 3.23.4
 
 concurrency:
   cancel-in-progress: true
@@ -35,6 +36,11 @@ jobs:
 
       - name: Install Cargo Make
         uses: davidB/rust-cargo-make@v1
+
+      - name: Install protoc
+        uses: taiki-e/install-action@v2
+        with:
+          tool: protoc@${{ env.PROTOC_VERSION }}
 
       - name: Format
         run: cargo make fmt-ci
