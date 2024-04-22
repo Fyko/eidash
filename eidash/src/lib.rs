@@ -7,10 +7,8 @@ extern crate serde;
 use std::time::Duration;
 
 use auth::OidcBackend;
-use axum::body::Body;
 use axum::error_handling::HandleErrorLayer;
-use axum::extract::{DefaultBodyLimit, MatchedPath};
-use axum::http::Request;
+use axum::extract::DefaultBodyLimit;
 use axum::{BoxError, Router};
 use axum_login::AuthManagerLayerBuilder;
 use config::CONFIG;
@@ -29,7 +27,6 @@ use tower_sessions::fred::clients::RedisClient;
 use tower_sessions::fred::interfaces::ClientLike;
 use tower_sessions::fred::types::{PerformanceConfig, ReconnectPolicy, RedisConfig};
 use tower_sessions::{CachingSessionStore, Expiry, MokaStore, RedisStore, SessionManagerLayer};
-use tracing::info_span;
 
 pub type Result<T, E = Error> = anyhow::Result<T, E>;
 
@@ -85,18 +82,7 @@ pub async fn create_router(state: AppState) -> anyhow::Result<Router<()>> {
         }))
         .layer(AuthManagerLayerBuilder::new(auth_backend, session_layer).build());
 
-    let trace_layer = TraceLayer::new_for_http().make_span_with(|request: &Request<Body>| {
-        let matched_path = request
-            .extensions()
-            .get::<MatchedPath>()
-            .map(MatchedPath::as_str);
-
-        info_span!(
-          "http_request",
-          method = ?request.method(),
-          matched_path,
-        )
-    });
+    let trace_layer = TraceLayer::new_for_http();
 
     let timeout_layer = ServiceBuilder::new()
         .layer(HandleErrorLayer::new(|e: BoxError| async move {

@@ -53,7 +53,7 @@ async fn fetch_saves(state: &AppState) -> Result<()> {
     });
 
     let sempahore = Arc::new(Semaphore::new(10));
-    if let Some(user) = users.try_next().await? {
+    while let Some(user) = users.try_next().await? {
         tokio::spawn({
             let state = state.clone();
             let inserter = insert_tx.clone();
