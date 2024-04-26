@@ -30,7 +30,13 @@ export default function Home() {
         <div className="space-y-4">
           <h2 className="text-2xl font-bold">User Info</h2>
           <SetEIDForm />
-          <pre>{JSON.stringify(auth.user, null, 4)}</pre>
+          <pre>
+            {(JSON.stringify(auth.user, null, 4) ?? "").replace(
+              /(EI)(\d+)(\d{4})/g,
+              (_, prefix, inner, lastFour) =>
+                `${prefix}${"*".repeat(inner.length)}${lastFour}`
+            )}
+          </pre>
         </div>
         <div className="space-y-4">
           <h1 className="text-4xl font-bold">Pretty Charts</h1>
