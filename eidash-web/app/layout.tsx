@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Roboto } from "next/font/google";
 import "./globals.css";
 import { AuthenticationProvider } from "@/hooks/useAuth";
+import PlausibleProvider from "next-plausible";
 
 const roboto = Roboto({ weight: ["400", "700"], subsets: ["latin"] });
 
@@ -17,6 +18,12 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
+      <head>
+        <PlausibleProvider
+          domain="eidash.fyko.net"
+          customDomain="https://apples.fyko.net"
+        />
+      </head>
       <body className={roboto.className} style={{ overflow: "unset" }}>
         <AuthenticationProvider>{children}</AuthenticationProvider>
       </body>
