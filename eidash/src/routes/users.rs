@@ -27,7 +27,7 @@ async fn get_user(
     State(state): State<AppState>,
 ) -> AxumResult<Response> {
     let Some(auth_user) = auth_session.user else {
-        return Err(Error::BadRequest("No user id in session".into()));
+        return Err(Error::Unauthorized);
     };
     let user_id = auth_user.user_id;
 
@@ -51,7 +51,7 @@ async fn submit_eid(
     Json(SubmitEID { ei_id }): Json<SubmitEID>,
 ) -> AxumResult<Response> {
     let Some(auth_user) = auth_session.user else {
-        return Err(Error::BadRequest("No user id in session".into()));
+        return Err(Error::Unauthorized);
     };
     let user_id = auth_user.user_id;
 

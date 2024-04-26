@@ -7,6 +7,7 @@ use axum_login::tower_sessions::Session;
 use http::StatusCode;
 
 use crate::auth::{AuthSession, Credentials, OidcLoginState, OidcQuery, AUTHENTICATION_STATE_KEY};
+use crate::config::CONFIG;
 use crate::state::AppState;
 
 const NEXT_URL_KEY: &str = "auth.next-url";
@@ -50,11 +51,12 @@ async fn callback(
         return StatusCode::INTERNAL_SERVER_ERROR.into_response();
     }
 
-    if let Ok(Some(next)) = session.remove::<String>(NEXT_URL_KEY) {
-        Redirect::to(&next).into_response()
-    } else {
-        Redirect::to("/").into_response()
-    }
+    let next = session
+        .remove::<String>(NEXT_URL_KEY)
+        .unwrap_or(Some("".to_string()))
+        .unwrap_or_default();
+
+    Redirect::to(&format!("{}/{next}", CONFIG.frontend_url)).into_response()
 }
 
 #[derive(Debug, Deserialize)]

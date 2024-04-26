@@ -19,7 +19,7 @@ script = '''
 command = "cargo"
 env_files = ["./.env"]
 args = ["run"]
-watch = true
+watch = { ignore_pattern = "eidash-web/*" }
 
 [tasks.lint]
 install_crate = "clippy"

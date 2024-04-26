@@ -12,7 +12,7 @@ services:
       context: eidash-web
       dockerfile: Dockerfile
       args:
-        NEXT_PUBLIC_API_URL: "http://localhost:39339"
+        NEXT_PUBLIC_API_BASE: "http://localhost:39339"
         VERCEL_URL: "http://localhost:3000"
     ports:
       - "3000:3000"

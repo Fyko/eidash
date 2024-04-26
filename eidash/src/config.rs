@@ -30,6 +30,9 @@ pub struct Config {
     /// The clickhouse URL
     pub clickhouse_url: String,
 
+    /// The frontend URL (http(s)://...)
+    pub frontend_url: String,
+
     pub oidc_uri: String,
     pub oidc_client_id: String,
     pub oidc_client_secret: String,
