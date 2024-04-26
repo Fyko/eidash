@@ -61,6 +61,7 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           build-args: |
             NEXT_PUBLIC_API_BASE=https://eidash.fyko.net
+            NEXT_PUBLIC_VERCEL_URL=https://eidash.fyko.net
             VERCEL_URL=https://eidash.fyko.net
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
