@@ -4,13 +4,13 @@ import { createContext, useContext, useEffect, useState } from "react";
 
 const AuthContext = createContext<ReturnType<typeof useProvideAuth>>({
   user: undefined,
-  fetchUser: async () => {},
   updateUser: async () => {},
 });
 
 export interface APIUser {
   id: string;
   ei_id: string;
+  profile_visibility: "private" | "public";
   username: string;
   email: string;
   created_at: string;
@@ -28,31 +28,32 @@ export function AuthenticationProvider({
 
 export const useAuth = () => useContext(AuthContext);
 
+export async function fetchUser(userId?: string): Promise<APIUser | null> {
+  const res = await fetch(`/api/users/${userId ?? "@me"}`, {
+    credentials: "include",
+  });
+
+  if (res.status > 200) {
+    return null;
+  }
+
+  const user = (await res.json()) as APIUser;
+
+  return user;
+}
+
 export const useProvideAuth = () => {
   const [user, setUser] = useState<APIUser | null | undefined>(undefined);
 
-  async function fetchUser(): Promise<void> {
-    const res = await fetch("/api/users/@me", {
-      credentials: "include",
-    });
-
-    if (res.status > 200) {
-      return void setUser(null);
-    }
-
-    const user = (await res.json()) as APIUser;
+  async function updateUser(): Promise<void> {
+    const user = await fetchUser();
     setUser(user);
   }
 
-  async function updateUser(): Promise<void> {
-    await fetchUser();
-  }
-
-  useEffect(() => void fetchUser(), []);
+  useEffect(() => void updateUser(), []);
 
   return {
     user,
-    fetchUser,
     updateUser,
   };
 };

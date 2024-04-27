@@ -1,7 +1,8 @@
-use axum::extract::State;
+use axum::extract::{Path, State};
 use axum::routing::{get, post};
 use axum::{Json, Router};
 use axum_core::response::{IntoResponse, Response};
+use eidash_id::markers::UserId;
 use time::OffsetDateTime;
 
 use crate::auth::AuthSession;
@@ -16,8 +17,9 @@ use crate::state::AppState;
 
 pub fn router() -> Router<AppState> {
     Router::new()
-        .route("/users/@me", get(get_user))
+        .route("/users/:user_id", get(get_user))
         .route("/users/@me/submit_eid", post(submit_eid))
+        .route("/users/@me/toggle_visibility", post(toggle_visibility))
 }
 
 #[tracing::instrument(skip_all)]
@@ -25,17 +27,29 @@ pub fn router() -> Router<AppState> {
 async fn get_user(
     auth_session: AuthSession,
     State(state): State<AppState>,
+    Path(user_id): Path<UserId>,
 ) -> AxumResult<Response> {
     let Some(auth_user) = auth_session.user else {
         return Err(Error::Unauthorized);
     };
-    let user_id = auth_user.user_id;
+
+    let (user_id, querying_self) = if user_id == "@me" {
+        (auth_user.user_id, true)
+    } else {
+        (user_id, false)
+    };
 
     let Some(user) = get_by_user_id(&state.db, user_id).await? else {
         return Err(Error::NotFound);
     };
 
-    Ok(Json(APIUser::from_row(user)).into_response())
+    let user = if querying_self {
+        APIUser::from_row(user)
+    } else {
+        APIUser::private(user)
+    };
+
+    Ok(Json(user).into_response())
 }
 
 #[derive(serde::Deserialize)]
@@ -120,6 +134,35 @@ async fn submit_eid(
         })
         .await
         .unwrap();
+
+    Ok(Json(APIUser::from_row(user)).into_response())
+}
+
+#[tracing::instrument(skip_all)]
+#[axum::debug_handler]
+async fn toggle_visibility(
+    auth_session: AuthSession,
+    State(state): State<AppState>,
+) -> AxumResult<Response> {
+    let Some(auth_user) = auth_session.user else {
+        return Err(Error::Unauthorized);
+    };
+    let user_id = auth_user.user_id;
+
+    let new_visibility = match auth_user.profile_visibility.as_str() {
+        "public" => "private",
+        "private" => "public",
+        _ => return Err(Error::BadRequest("invalid profile_visibility".to_string())),
+    };
+
+    let user = sqlx::query_as!(
+        UserEntity,
+        r#"update "user" set profile_visibility = $1 where user_id = $2 returning *"#,
+        new_visibility,
+        user_id.to_string(),
+    )
+    .fetch_one(&*state.db)
+    .await?;
 
     Ok(Json(APIUser::from_row(user)).into_response())
 }

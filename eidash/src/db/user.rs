@@ -9,6 +9,8 @@ use eidash_id::markers::UserId;
 pub struct UserEntity {
     pub user_id: UserId,
     pub ei_id: Option<String>,
+    pub profile_visibility: String,
+
     pub openid: String,
     pub email: String,
     pub username: String,
@@ -16,6 +18,7 @@ pub struct UserEntity {
     pub access_token: Secret<String>,
     pub refresh_token: Secret<String>,
     pub token_type: String,
+
     pub expires_at: Timestamptz,
     pub created_at: Timestamptz,
     pub updated_at: Timestamptz,

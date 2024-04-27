@@ -7,6 +7,7 @@ use time::OffsetDateTime;
 
 use crate::auth::AuthSession;
 use crate::clickhouse::BasicSaveV1Row;
+use crate::db::user::get_by_user_id;
 use crate::error::{AxumResult, Error};
 use crate::state::AppState;
 
@@ -31,18 +32,26 @@ async fn get_saves(
         timestamp_lt,
     }): Query<GetSavesQueryParams>,
 ) -> AxumResult<Response> {
-    // TODO: macro or extractor wrapped around AuthSession
-    let user_id = if user_id == "@me" {
-        let Some(auth_user) = auth_session.user else {
-            return Err(Error::Unauthorized);
+    let Some(auth_user) = auth_session.user else {
+        return Err(Error::Unauthorized);
+    };
+
+    let (user_id, querying_self) = if user_id == "@me" {
+        (auth_user.user_id, true)
+    } else {
+        (user_id, false)
+    };
+
+    // check if the user has a public/private profile
+    if !querying_self {
+        let Some(queried_user_row) = get_by_user_id(&state.db, user_id.clone()).await? else {
+            return Err(Error::NotFound);
         };
 
-        auth_user.user_id
-    } else {
-        return Err(Error::BadRequest(
-            "You're not allowed to fetch other users".into(),
-        ));
-    };
+        if queried_user_row.profile_visibility == "private" {
+            return Err(Error::Forbidden);
+        }
+    }
 
     let saves = state
         .clickhouse

@@ -11,6 +11,9 @@ export default function ProphecyEggsChart() {
         time: row.timestamp as Time,
         value: row.eggs_of_prophecy,
       }))}
+      valueFormatter={(priceValue: number) =>
+        Math.floor(priceValue).toLocaleString()
+      }
       colors={{
         LINE_LINE_COLOR: "gold",
         AREA_TOP_COLOR: "gold",

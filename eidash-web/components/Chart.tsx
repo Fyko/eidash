@@ -56,6 +56,7 @@ export const themeColors = {
 
 export interface ChartProps {
   data: (AreaData<Time> | WhitespaceData<Time>)[];
+  valueFormatter: (value: number) => string;
   colors?: {
     CHART_BACKGROUND_COLOR?: string;
     LINE_LINE_COLOR?: string;
@@ -95,8 +96,7 @@ export const Chart = (props: ChartProps) => {
       width: chartContainerRef.current!.clientWidth,
       height: 300,
       localization: {
-        priceFormatter: (priceValue: BarPrice) =>
-          formatEIValue(priceValue, { trim: true }),
+        priceFormatter: props.valueFormatter,
         dateFormat: "yyyy-MM-dd",
         timeFormatter: (time: number) => new Date(time * 1000).toLocaleString(),
       },
