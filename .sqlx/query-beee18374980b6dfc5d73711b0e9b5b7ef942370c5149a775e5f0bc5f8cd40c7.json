@@ -1,6 +1,6 @@
 {
     "db_name": "PostgreSQL",
-    "query": "update \"user\" set ei_id = $1 where user_id = $2 returning *",
+    "query": "update \"user\" set profile_visibility = $1 where user_id = $2 returning *",
     "describe": {
         "columns": [
             {
@@ -91,5 +91,5 @@
             false
         ]
     },
-    "hash": "0bb8995839c2b8d494eece15d06b08ee03b278652d6c34a8e9b7f8edb03596f2"
+    "hash": "beee18374980b6dfc5d73711b0e9b5b7ef942370c5149a775e5f0bc5f8cd40c7"
 }

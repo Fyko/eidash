@@ -1,11 +1,9 @@
 "use client";
 import EarningsBonusChart from "@/components/EarningsBonusChart";
 import ProphecyEggsChart from "@/components/ProphecyEggsChart";
-import SetEIDForm from "@/components/SetEIDForm";
 import SoulEggsChart from "@/components/SoulEggsChart";
 import { APIUser, fetchUser, useAuth } from "@/hooks/useAuth";
 import { SavesProvider, useSaves } from "@/hooks/useSaves";
-import { GetServerSideProps } from "next";
 import { useEffect, useState } from "react";
 
 export default function UserProfile({

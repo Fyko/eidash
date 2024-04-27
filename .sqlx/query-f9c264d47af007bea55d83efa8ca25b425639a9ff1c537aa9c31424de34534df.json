@@ -62,6 +62,11 @@
                 "ordinal": 11,
                 "name": "updated_at",
                 "type_info": "Timestamptz"
+            },
+            {
+                "ordinal": 12,
+                "name": "profile_visibility",
+                "type_info": "Text"
             }
         ],
         "parameters": {
@@ -78,6 +83,7 @@
         "nullable": [
             false,
             true,
+            false,
             false,
             false,
             false,
