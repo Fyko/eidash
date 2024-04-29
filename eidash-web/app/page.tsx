@@ -1,20 +1,17 @@
-"use client";
+"use server";
+
+import { fetchSaves, fetchUser } from "@/actions/user";
 import CopyUserProfileURLButton from "@/components/CopyUserProfileURLButton";
 import EarningsBonusChart from "@/components/EarningsBonusChart";
 import ProfileVisibilityButton from "@/components/ProfileVisibilityButton";
 import ProphecyEggsChart from "@/components/ProphecyEggsChart";
 import SetEIDForm from "@/components/SetEIDForm";
 import SoulEggsChart from "@/components/SoulEggsChart";
-import { useAuth } from "@/hooks/useAuth";
-import { SavesProvider } from "@/hooks/useSaves";
 import Image from "next/image";
 
-export default function Home() {
-  const auth = useAuth();
-
-  if (auth.user === null) {
-    window.location.href = `/api/oidc/login`;
-  }
+export default async function Home() {
+  const user = await fetchUser("@me");
+  const saves = await fetchSaves("@me");
 
   return (
     <div className="mx-auto max-w-4xl px-5 py-10">
@@ -38,7 +35,7 @@ export default function Home() {
         </nav>
         <div className="overflow-hidden px-1 py-2">
           <a className="btn" href={`/api/oidc/logout`}>
-            {auth.user === null ? "Login" : "Logout"}
+            {user === null ? "Login" : "Logout"}
           </a>
         </div>
       </div>
@@ -46,15 +43,15 @@ export default function Home() {
         <div className="space-y-4">
           <h2 className="text-2xl font-bold">
             Your Profile{" "}
-            {auth.user?.profile_visibility === "public" ? (
-              <CopyUserProfileURLButton />
+            {user?.profile_visibility === "public" ? (
+              <CopyUserProfileURLButton user={user} />
             ) : (
               <></>
             )}
           </h2>
           <SetEIDForm />
           <pre>
-            {(JSON.stringify(auth.user, null, 4) ?? "").replace(
+            {(JSON.stringify(user, null, 4) ?? "").replace(
               /(EI)(\d+)(\d{4})/g,
               (_, prefix, inner, lastFour) =>
                 `${prefix}${"*".repeat(inner.length)}${lastFour}`
@@ -63,16 +60,14 @@ export default function Home() {
           <ProfileVisibilityButton />
         </div>
         <div className="space-y-4">
-          <SavesProvider>
-            <h2 className="text-2xl font-bold">Earnings Bonus</h2>
-            <EarningsBonusChart />
+          <h2 className="text-2xl font-bold">Earnings Bonus</h2>
+          <EarningsBonusChart saves={saves} />
 
-            <h2 className="text-2xl font-bold">Soul Eggs</h2>
-            <SoulEggsChart />
+          <h2 className="text-2xl font-bold">Soul Eggs</h2>
+          <SoulEggsChart saves={saves} />
 
-            <h2 className="text-2xl font-bold">Prophecy Eggs</h2>
-            <ProphecyEggsChart />
-          </SavesProvider>
+          <h2 className="text-2xl font-bold">Prophecy Eggs</h2>
+          <ProphecyEggsChart saves={saves} />
         </div>
       </div>
     </div>

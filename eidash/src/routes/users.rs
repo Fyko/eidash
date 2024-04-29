@@ -29,14 +29,21 @@ async fn get_user(
     State(state): State<AppState>,
     Path(user_id): Path<UserId>,
 ) -> AxumResult<Response> {
-    let Some(auth_user) = auth_session.user else {
-        return Err(Error::Unauthorized);
-    };
+    let querying_self = user_id == "@me"
+        || auth_session
+            .user
+            .as_ref()
+            .map_or(false, |u| u.user_id == user_id);
 
-    let (user_id, querying_self) = if user_id == "@me" {
-        (auth_user.user_id, true)
+    let user_id = if querying_self {
+        // only authorized users can query themselves
+        let Some(auth_user) = auth_session.user else {
+            return Err(Error::Unauthorized);
+        };
+
+        auth_user.user_id
     } else {
-        (user_id, false)
+        user_id
     };
 
     let Some(user) = get_by_user_id(&state.db, user_id).await? else {

@@ -1,10 +1,14 @@
+"use client";
+
 import { Time } from "lightweight-charts";
 import { Chart } from "./Chart";
-import { useSaves } from "@/hooks/useSaves";
+import { BasicSaveV1Row } from "@/hooks/useSaves";
 
-export default function ProphecyEggsChart() {
-  const saves = useSaves();
-
+export default function ProphecyEggsChart({
+  saves,
+}: {
+  saves: BasicSaveV1Row[];
+}) {
   return (
     <Chart
       data={saves.map((row) => ({

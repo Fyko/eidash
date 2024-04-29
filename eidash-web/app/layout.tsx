@@ -23,6 +23,19 @@ export const metadata: Metadata = {
       },
     ],
   },
+  twitter: {
+    card: "summary",
+    site: "@fykowo",
+    creator: "@fykowo",
+    title: "EIDash",
+    description:
+      "Track your Soul Eggs, Eggs of Prophecy, and Earnings Bonus with ease.",
+    images: [
+      {
+        url: "/yeti.png",
+      },
+    ],
+  },
 };
 
 export default function RootLayout({

@@ -9,10 +9,10 @@ const AuthContext = createContext<ReturnType<typeof useProvideAuth>>({
 
 export interface APIUser {
   id: string;
-  ei_id: string;
+  ei_id?: string;
   profile_visibility: "private" | "public";
   username: string;
-  email: string;
+  email?: string;
   created_at: string;
 }
 

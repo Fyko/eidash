@@ -1,11 +1,15 @@
-import { BarPrice, Time } from "lightweight-charts";
+"use client";
+
+import { Time } from "lightweight-charts";
 import { Chart } from "./Chart";
-import { useSaves } from "@/hooks/useSaves";
 import { formatEIValue } from "@/lib/units";
+import { BasicSaveV1Row } from "@/hooks/useSaves";
 
-export default function EarningsBonusChart() {
-  const saves = useSaves();
-
+export default function EarningsBonusChart({
+  saves,
+}: {
+  saves: BasicSaveV1Row[];
+}) {
   return (
     <Chart
       data={saves.map((row) => ({

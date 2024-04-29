@@ -19,6 +19,7 @@ pub fn router() -> Router<AppState> {
 struct GetSavesQueryParams {
     timestamp_gte: Option<u64>,
     timestamp_lt: Option<u64>,
+    limit: Option<u64>,
 }
 
 #[tracing::instrument(skip_all)]
@@ -30,16 +31,24 @@ async fn get_saves(
     Query(GetSavesQueryParams {
         timestamp_gte,
         timestamp_lt,
+        limit,
     }): Query<GetSavesQueryParams>,
 ) -> AxumResult<Response> {
-    let Some(auth_user) = auth_session.user else {
-        return Err(Error::Unauthorized);
-    };
+    let querying_self = user_id == "@me"
+        || auth_session
+            .user
+            .as_ref()
+            .map_or(false, |u| u.user_id == user_id);
 
-    let (user_id, querying_self) = if user_id == "@me" {
-        (auth_user.user_id, true)
+    let user_id = if querying_self {
+        // only authorized users can query themselves
+        let Some(auth_user) = auth_session.user else {
+            return Err(Error::Unauthorized);
+        };
+
+        auth_user.user_id
     } else {
-        (user_id, false)
+        user_id
     };
 
     // check if the user has a public/private profile
@@ -55,10 +64,11 @@ async fn get_saves(
 
     let saves = state
         .clickhouse
-        .query("select * from basic_save_v1 where user_id = ? and timestamp >= ? and timestamp < ? order by timestamp asc")
+        .query("select * from basic_save_v1 where user_id = ? and timestamp >= ? and timestamp < ? order by timestamp asc limit ?")
         .bind(user_id)
         .bind(timestamp_gte.map_or(0, |time| time / 1000))
         .bind(timestamp_lt.map_or(OffsetDateTime::now_utc().unix_timestamp() as u64, |time| time / 1000))
+        .bind(limit.unwrap_or(1_000_000_000_000))
         .fetch_all::<BasicSaveV1Row>()
         .await
         .expect("failed to fetch saves");

@@ -1,11 +1,11 @@
-import { formatEIValue } from "@/lib/units";
+"use client";
+
 import {
   createChart,
   ColorType,
   AreaData,
   Time,
   WhitespaceData,
-  BarPrice,
 } from "lightweight-charts";
 import React, { useEffect, useRef } from "react";
 
@@ -56,7 +56,7 @@ export const themeColors = {
 
 export interface ChartProps {
   data: (AreaData<Time> | WhitespaceData<Time>)[];
-  valueFormatter: (value: number) => string;
+  valueFormatter?: (value: number) => string;
   colors?: {
     CHART_BACKGROUND_COLOR?: string;
     LINE_LINE_COLOR?: string;
@@ -96,7 +96,9 @@ export const Chart = (props: ChartProps) => {
       width: chartContainerRef.current!.clientWidth,
       height: 300,
       localization: {
-        priceFormatter: props.valueFormatter,
+        priceFormatter:
+          props.valueFormatter ??
+          ((priceValue: number) => priceValue.toString()),
         dateFormat: "yyyy-MM-dd",
         timeFormatter: (time: number) => new Date(time * 1000).toLocaleString(),
       },
@@ -124,6 +126,7 @@ export const Chart = (props: ChartProps) => {
     textColor,
     areaTopColor,
     areaBottomColor,
+    props.valueFormatter,
   ]);
 
   return <div className="w-full" ref={chartContainerRef} />;

@@ -19,7 +19,7 @@ export interface BasicSaveV1Row {
   backup_time: number;
 }
 
-const SavesContext = createContext<BasicSaveV1Row[]>([]);
+export const SavesContext = createContext<BasicSaveV1Row[]>([]);
 
 export function SavesProvider({
   children,
