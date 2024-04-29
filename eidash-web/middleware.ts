@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
+const API_BASE = process.env.API_BASE;
+
 const protectedRoutes = ["/"];
 
 export default async function middleware(req: NextRequest) {
@@ -14,7 +16,7 @@ export default async function middleware(req: NextRequest) {
     return NextResponse.redirect(new URL("/api/oidc/login", req.url));
   }
 
-  const me = await fetch("http://localhost:3000/api/users/@me", {
+  const me = await fetch(`${API_BASE}/api/users/@me`, {
     headers: {
       Cookie: `__eidash_session=${sessionCookie?.value}`,
     },

@@ -1,5 +1,7 @@
 import { cookies } from "next/headers";
 
+const API_BASE = process.env.API_BASE;
+
 export interface APIUser {
   id: string;
   ei_id?: string;
@@ -12,7 +14,7 @@ export interface APIUser {
 export async function fetchUser(id: string): Promise<APIUser | null> {
   const jar = cookies();
 
-  const res = await fetch(`http://localhost:3000/api/users/${id}`, {
+  const res = await fetch(`${API_BASE}/api/users/${id}`, {
     headers: {
       cookie: jar.toString(),
     },
@@ -37,7 +39,7 @@ export async function fetchSaves(
 ): Promise<BasicSaveV1Row[]> {
   const jar = cookies();
 
-  const url = new URL(`http://localhost:3000/api/users/${id}/basic-save-v1`);
+  const url = new URL(`${API_BASE}/api/users/${id}/basic-save-v1`);
   if (limit) {
     url.searchParams.set("limit", limit.toString());
   }
