@@ -8,10 +8,26 @@ import ProphecyEggsChart from "@/components/ProphecyEggsChart";
 import SetEIDForm from "@/components/SetEIDForm";
 import SoulEggsChart from "@/components/SoulEggsChart";
 import Image from "next/image";
+import { formatDistance } from "date-fns";
 
 export default async function Home() {
   const user = await fetchUser("@me");
   const saves = await fetchSaves("@me");
+
+  const lastUpdated = (
+    <p>
+      Last updated{" "}
+      <span className="italic">
+        {formatDistance(
+          new Date(saves[saves.length - 1].timestamp * 1000),
+          new Date(),
+          {
+            addSuffix: true,
+          }
+        )}
+      </span>
+    </p>
+  );
 
   return (
     <div className="mx-auto max-w-4xl px-5 py-10">
@@ -61,12 +77,15 @@ export default async function Home() {
         </div>
         <div className="space-y-4">
           <h2 className="text-2xl font-bold">Earnings Bonus</h2>
+          {lastUpdated}
           <EarningsBonusChart saves={saves} />
 
           <h2 className="text-2xl font-bold">Soul Eggs</h2>
+          {lastUpdated}
           <SoulEggsChart saves={saves} />
 
           <h2 className="text-2xl font-bold">Prophecy Eggs</h2>
+          {lastUpdated}
           <ProphecyEggsChart saves={saves} />
         </div>
       </div>
