@@ -1,5 +1,5 @@
 <clickhouse>
-    <logger>
+    <!-- <logger>
         <level>warning</level>
         <console>true</console>
     </logger>
@@ -12,5 +12,5 @@
     <metric_log remove="remove"/>
     <asynchronous_metric_log remove="remove"/>
     <session_log remove="remove"/>
-    <part_log remove="remove"/>
+    <part_log remove="remove"/> -->
 </clickhouse>
