@@ -42,11 +42,27 @@ async fn fetch_saves(state: &AppState) -> Result<()> {
     let mut users = sqlx::query!(r#"select user_id, ei_id from "user" where ei_id is not null"#)
         .fetch(&*state.db);
 
-    let mut insert = state.clickhouse.insert::<BasicSaveV1Row>("basic_save_v1")?;
+    let mut insert = state
+        .clickhouse
+        .inserter::<BasicSaveV1Row>("basic_save_v1")?
+        .with_timeouts(Some(Duration::from_secs(5)), Some(Duration::from_secs(20)))
+        .with_max_bytes(256 * 1024 * 1024)
+        .with_max_rows(256)
+        .with_period(Some(Duration::from_secs(15)));
+
     let (insert_tx, mut insert_rx) = mpsc::channel(128);
     let insert_handle = tokio::spawn(async move {
         while let Some(row) = insert_rx.recv().await {
-            insert.write(&row).await.unwrap();
+            insert.write(&row).expect("failed to write row");
+            let stats = insert.commit().await.expect("failed to commit");
+            if stats.rows > 0 {
+                tracing::debug!(
+                    "{} bytes, {} rows, {} transactions have been inserted",
+                    stats.bytes,
+                    stats.rows,
+                    stats.transactions,
+                );
+            }
         }
 
         insert.end().await.unwrap();

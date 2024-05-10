@@ -25,7 +25,10 @@ tracing-subscriber = { version = "0.3", features = [
   "json",
 ] }
 clokwerk = "0.4"
-clickhouse = { version = "0.11", features = ["time"] }
+clickhouse = { features = [
+  "time",
+  "inserter",
+], git = "https://github.com/loyd/clickhouse.rs", rev = "24b39c7" }
 envy = "0.4"
 once_cell.workspace = true
 axum = { version = "0.7.5", features = ["tracing", "macros", "http2", "ws"] }
