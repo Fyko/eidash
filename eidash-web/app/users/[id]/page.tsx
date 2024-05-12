@@ -1,10 +1,10 @@
 "use server";
 
 import { fetchSaves, fetchUser } from "@/actions/user";
-import EarningsBonusChart from "@/components/EarningsBonusChart";
-import ProphecyEggsChart from "@/components/ProphecyEggsChart";
-import SoulEggsChart from "@/components/SoulEggsChart";
-import { APIUser } from "@/hooks/useAuth";
+import EarningsBonusChart from "@/components/charts/EarningsBonusChart";
+import MerChart from "@/components/charts/MerChart";
+import ProphecyEggsChart from "@/components/charts/ProphecyEggsChart";
+import SoulEggsChart from "@/components/charts/SoulEggsChart";
 import { formatEIValue } from "@/lib/units";
 import { formatDistance } from "date-fns";
 import { Metadata } from "next";
@@ -66,6 +66,10 @@ export default async function UserProfile({ params: { id } }: Props) {
           <h2 className="text-2xl font-bold">Prophecy Eggs</h2>
           {lastUpdated}
           <ProphecyEggsChart saves={saves} />
+
+          <h2 className="text-2xl font-bold">MER Value</h2>
+          {lastUpdated}
+          <MerChart saves={saves} />
         </div>
       </div>
     </div>

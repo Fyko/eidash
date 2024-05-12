@@ -2,13 +2,14 @@
 
 import { fetchSaves, fetchUser } from "@/actions/user";
 import CopyUserProfileURLButton from "@/components/CopyUserProfileURLButton";
-import EarningsBonusChart from "@/components/EarningsBonusChart";
+import EarningsBonusChart from "@/components/charts/EarningsBonusChart";
 import ProfileVisibilityButton from "@/components/ProfileVisibilityButton";
-import ProphecyEggsChart from "@/components/ProphecyEggsChart";
+import ProphecyEggsChart from "@/components/charts/ProphecyEggsChart";
 import SetEIDForm from "@/components/SetEIDForm";
-import SoulEggsChart from "@/components/SoulEggsChart";
+import SoulEggsChart from "@/components/charts/SoulEggsChart";
 import Image from "next/image";
 import { formatDistance } from "date-fns";
+import MerChart from "@/components/charts/MerChart";
 
 export default async function Home() {
   const user = await fetchUser("@me");
@@ -87,6 +88,10 @@ export default async function Home() {
           <h2 className="text-2xl font-bold">Prophecy Eggs</h2>
           {lastUpdated}
           <ProphecyEggsChart saves={saves} />
+
+          <h2 className="text-2xl font-bold">MER Value</h2>
+          {lastUpdated}
+          <MerChart saves={saves} />
         </div>
       </div>
     </div>
