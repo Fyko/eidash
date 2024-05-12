@@ -13,9 +13,7 @@ export default function MerChart({ saves }: { saves: BasicSaveV1Row[] }) {
         time: row.timestamp as Time,
         value: calculateMer(row),
       }))}
-      valueFormatter={(priceValue: number) =>
-        formatEIValue(priceValue, { trim: true, decimals: 4 })
-      }
+      valueFormatter={(priceValue: number) => priceValue.toFixed(2)}
       colors={{
         LINE_LINE_COLOR: "green",
         AREA_TOP_COLOR: "green",
