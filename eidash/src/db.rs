@@ -4,13 +4,12 @@ use std::time::Duration;
 use sqlx::postgres::{PgConnectOptions, PgPoolOptions};
 use sqlx::{ConnectOptions, PgPool};
 
-use crate::config::CONFIG;
-
 pub mod types;
 
+pub mod basic_save_v1;
 pub mod user;
 
-pub async fn create_db() -> Arc<PgPool> {
+pub async fn create_db(database_url: String) -> Arc<PgPool> {
     let pool = PgPoolOptions::new()
         .max_connections(100)
         .min_connections(5)
@@ -18,12 +17,9 @@ pub async fn create_db() -> Arc<PgPool> {
         .idle_timeout(Duration::from_secs(8))
         .max_lifetime(Duration::from_secs(60));
 
-    tracing::info!("connecting to database {}", CONFIG.database_url);
+    tracing::info!("connecting to database {}", database_url);
 
-    let mut opts: PgConnectOptions = CONFIG
-        .database_url
-        .parse()
-        .expect("failed to parse database url");
+    let mut opts: PgConnectOptions = database_url.parse().expect("failed to parse database url");
     opts = opts.log_statements(tracing::log::LevelFilter::Trace);
 
     let db = pool

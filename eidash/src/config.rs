@@ -29,6 +29,8 @@ pub struct Config {
 
     /// The clickhouse URL
     pub clickhouse_url: String,
+    /// The timescale URL
+    pub timescale_url: String,
 
     /// The frontend URL (http(s)://...)
     pub frontend_url: String,

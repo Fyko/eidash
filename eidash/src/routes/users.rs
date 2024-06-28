@@ -3,10 +3,11 @@ use axum::routing::{get, post};
 use axum::{Json, Router};
 use axum_core::response::{IntoResponse, Response};
 use eidash_id::markers::UserId;
+use num_bigint::BigInt;
+use sqlx::types::BigDecimal;
 use time::OffsetDateTime;
 
 use crate::auth::AuthSession;
-use crate::clickhouse::BasicSaveV1Row;
 use crate::db::user::{get_by_user_id, UserEntity};
 use crate::ei::{
     calculate_earnings_bonus, first_contact, get_epic_research_level, EarningsBonusData,
@@ -112,35 +113,42 @@ async fn submit_eid(
         return Ok(Json(APIUser::from_row(user)).into_response());
     };
 
-    let soul_eggs = game.soul_eggs_d();
-    let eggs_of_prophecy = game.eggs_of_prophecy();
-    let er_prophecy_bonus_level = get_epic_research_level(&game, "prophecy_bonus");
-    let er_soul_food_level = get_epic_research_level(&game, "soul_eggs");
+    let soul_eggs = game.soul_eggs_d() as u128;
+    let eggs_of_prophecy = game.eggs_of_prophecy() as i32;
+    let er_prophecy_bonus_level = get_epic_research_level(&game, "prophecy_bonus") as i32;
+    let er_soul_food_level = get_epic_research_level(&game, "soul_eggs") as i32;
 
     let computed_earnings_bonus = calculate_earnings_bonus(&EarningsBonusData {
-        soul_eggs,
+        soul_eggs: soul_eggs as f64,
         eggs_of_prophecy,
         er_prophecy_bonus_level,
         er_soul_food_level,
     });
 
-    state
-        .clickhouse
-        .insert("basic_save_v1")
-        .unwrap()
-        .write(&BasicSaveV1Row {
-            user_id: user.user_id.to_string(),
-            computed_earnings_bonus,
-            soul_eggs,
-            eggs_of_prophecy,
-            er_prophecy_bonus_level,
-            er_soul_food_level,
-            timestamp: OffsetDateTime::now_utc(),
-            backup_time: OffsetDateTime::from_unix_timestamp(backup_time)
-                .expect("failed to convert backup_time"),
-        })
-        .await
-        .unwrap();
+    let _ = sqlx::query!(
+        r#"
+            insert into basic_save_v1 (
+                user_id,
+                computed_earnings_bonus,
+                soul_eggs,
+                eggs_of_prophecy,
+                er_prophecy_bonus_level,
+                er_soul_food_level,
+                time,
+                backup_time
+            )
+            values ($1, $2, $3, $4, $5, $6, $7, $8)
+        "#,
+        user.user_id.to_string(),
+        computed_earnings_bonus,
+        BigDecimal::from(BigInt::from(soul_eggs)),
+        eggs_of_prophecy,
+        er_prophecy_bonus_level,
+        er_soul_food_level,
+        OffsetDateTime::now_utc(),
+        backup_time,
+    )
+    .execute(&*state.db);
 
     Ok(Json(APIUser::from_row(user)).into_response())
 }

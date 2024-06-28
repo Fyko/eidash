@@ -37,9 +37,9 @@ pub fn get_epic_research_level(game: &Game, id: &str) -> u32 {
 
 pub struct EarningsBonusData {
     pub soul_eggs: f64,
-    pub eggs_of_prophecy: u64,
-    pub er_prophecy_bonus_level: u32,
-    pub er_soul_food_level: u32,
+    pub eggs_of_prophecy: i32,
+    pub er_prophecy_bonus_level: i32,
+    pub er_soul_food_level: i32,
 }
 
 pub fn calculate_earnings_bonus(data: &EarningsBonusData) -> f64 {

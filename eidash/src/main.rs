@@ -26,8 +26,13 @@ async fn main() -> anyhow::Result<()> {
         .with(fmt::layer())
         .init();
 
-    let db = create_db().await;
+    let db = create_db(CONFIG.database_url.clone()).await;
     sqlx::migrate!("../migrations").run(&*db).await?;
+
+    let timescale = create_db(CONFIG.timescale_url.clone()).await;
+    sqlx::migrate!("../timescale-migrations")
+        .run(&*timescale)
+        .await?;
 
     let oidc_client = Arc::from(
         create_oidc_client(
@@ -43,6 +48,7 @@ async fn main() -> anyhow::Result<()> {
 
     let state = Arc::new(InnerAppState {
         db,
+        timescale,
         oidc_client,
         api_healthy: Arc::new(false.into()),
         clickhouse: Arc::new(clickhouse_client),

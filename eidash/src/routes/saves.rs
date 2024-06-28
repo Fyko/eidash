@@ -6,7 +6,6 @@ use eidash_id::markers::UserId;
 use time::OffsetDateTime;
 
 use crate::auth::AuthSession;
-use crate::clickhouse::BasicSaveV1Row;
 use crate::db::user::get_by_user_id;
 use crate::error::{AxumResult, Error};
 use crate::state::AppState;
@@ -62,9 +61,17 @@ async fn get_saves(
         }
     }
 
+    let saves = sqlx::query!(
+        "select * from basic_save_v1 where user_id = $1 and time >= $2 and time < $3 order by time asc limit $4",
+        user_id.to_string(),
+        timestamp_gte.map_or(0, |time| time / 1000),
+        timestamp_lt.map_or(OffsetDateTime::now_utc().unix_timestamp() as u64, |time| time / 1000),
+        limit.unwrap_or(1_000_000_000_000),
+    );
+
     let saves = state
         .clickhouse
-        .query("select * from basic_save_v1 where user_id = ? and timestamp >= ? and timestamp < ? order by timestamp asc limit ?")
+        .query("select * from basic_save_v1 where user_id = $1 and timestamp >= $2 and timestamp < $3 order by timestamp asc limit $4")
         .bind(user_id)
         .bind(timestamp_gte.map_or(0, |time| time / 1000))
         .bind(timestamp_lt.map_or(OffsetDateTime::now_utc().unix_timestamp() as u64, |time| time / 1000))
