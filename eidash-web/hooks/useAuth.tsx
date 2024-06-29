@@ -42,6 +42,16 @@ export async function fetchUser(userId?: string): Promise<APIUser | null> {
   return user;
 }
 
+export function useUser(userId?: string): APIUser | null | undefined {
+  const [user, setUser] = useState<APIUser | null | undefined>(undefined);
+
+  useEffect(() => {
+    fetchUser(userId).then(setUser);
+  }, [userId]);
+
+  return user;
+}
+
 export const useProvideAuth = () => {
   const [user, setUser] = useState<APIUser | null | undefined>(undefined);
 

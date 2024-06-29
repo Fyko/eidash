@@ -29,8 +29,8 @@ export interface BasicSaveV1Row {
   eggs_of_prophecy: number;
   er_soul_food_level: number;
   er_prophecy_bonus_level: number;
-  timestamp: number;
-  backup_time: number;
+  timestamp: string;
+  backup_time: string;
 }
 
 export async function fetchSaves(

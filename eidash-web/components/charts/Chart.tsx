@@ -103,6 +103,7 @@ export const Chart = (props: ChartProps) => {
         timeFormatter: (time: number) => new Date(time * 1000).toLocaleString(),
       },
     });
+    chart.timeScale().applyOptions({ secondsVisible: true });
     chart.timeScale().fitContent();
 
     const newSeries = chart.addAreaSeries({

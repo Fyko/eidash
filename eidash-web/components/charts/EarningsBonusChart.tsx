@@ -3,17 +3,13 @@
 import { Time } from "lightweight-charts";
 import { Chart } from "./Chart";
 import { formatEIValue } from "@/lib/units";
-import { BasicSaveV1Row } from "@/hooks/useSaves";
+import { BasicSave } from "@/hooks/useSaves";
 
-export default function EarningsBonusChart({
-  saves,
-}: {
-  saves: BasicSaveV1Row[];
-}) {
+export default function EarningsBonusChart({ saves }: { saves: BasicSave[] }) {
   return (
     <Chart
       data={saves.map((row) => ({
-        time: row.timestamp as Time,
+        time: (row.timestamp.getTime() / 1000) as Time,
         value: row.computed_earnings_bonus * 100,
       }))}
       valueFormatter={(priceValue: number) =>

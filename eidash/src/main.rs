@@ -1,7 +1,6 @@
 use std::net::SocketAddr;
 use std::sync::Arc;
 
-use clickhouse::Client as ClickHouseClient;
 use eidash::auth::create_oidc_client;
 use eidash::config::{get_config, CONFIG};
 use eidash::create_router;
@@ -26,7 +25,7 @@ async fn main() -> anyhow::Result<()> {
         .with(fmt::layer())
         .init();
 
-    let db = create_db().await;
+    let db = create_db(CONFIG.database_url.clone()).await;
     sqlx::migrate!("../migrations").run(&*db).await?;
 
     let oidc_client = Arc::from(
@@ -39,13 +38,10 @@ async fn main() -> anyhow::Result<()> {
         .await?,
     );
 
-    let clickhouse_client = ClickHouseClient::default().with_url(CONFIG.clickhouse_url.clone());
-
     let state = Arc::new(InnerAppState {
         db,
         oidc_client,
         api_healthy: Arc::new(false.into()),
-        clickhouse: Arc::new(clickhouse_client),
     });
 
     tokio::spawn({

@@ -31,7 +31,6 @@ use tower_sessions::{CachingSessionStore, Expiry, MokaStore, RedisStore, Session
 pub type Result<T, E = Error> = anyhow::Result<T, E>;
 
 pub mod auth;
-pub mod clickhouse;
 pub mod config;
 pub mod db;
 pub mod ei;

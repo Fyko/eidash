@@ -1,95 +1,95 @@
 {
-    "db_name": "PostgreSQL",
-    "query": "update \"user\" set profile_visibility = $1 where user_id = $2 returning *",
-    "describe": {
-        "columns": [
-            {
-                "ordinal": 0,
-                "name": "user_id",
-                "type_info": "Text"
-            },
-            {
-                "ordinal": 1,
-                "name": "ei_id",
-                "type_info": "Text"
-            },
-            {
-                "ordinal": 2,
-                "name": "openid",
-                "type_info": "Text"
-            },
-            {
-                "ordinal": 3,
-                "name": "email",
-                "type_info": "Varchar"
-            },
-            {
-                "ordinal": 4,
-                "name": "username",
-                "type_info": "Text"
-            },
-            {
-                "ordinal": 5,
-                "name": "points",
-                "type_info": "Int4"
-            },
-            {
-                "ordinal": 6,
-                "name": "token_type",
-                "type_info": "Text"
-            },
-            {
-                "ordinal": 7,
-                "name": "access_token",
-                "type_info": "Text"
-            },
-            {
-                "ordinal": 8,
-                "name": "refresh_token",
-                "type_info": "Text"
-            },
-            {
-                "ordinal": 9,
-                "name": "expires_at",
-                "type_info": "Timestamptz"
-            },
-            {
-                "ordinal": 10,
-                "name": "created_at",
-                "type_info": "Timestamptz"
-            },
-            {
-                "ordinal": 11,
-                "name": "updated_at",
-                "type_info": "Timestamptz"
-            },
-            {
-                "ordinal": 12,
-                "name": "profile_visibility",
-                "type_info": "Text"
-            }
-        ],
-        "parameters": {
-            "Left": [
-                "Text",
-                "Text"
-            ]
-        },
-        "nullable": [
-            false,
-            true,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false
-        ]
+  "db_name": "PostgreSQL",
+  "query": "update \"user\" set profile_visibility = $1 where user_id = $2 returning *",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "user_id",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 1,
+        "name": "ei_id",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 2,
+        "name": "openid",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 3,
+        "name": "email",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 4,
+        "name": "username",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 5,
+        "name": "points",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 6,
+        "name": "token_type",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 7,
+        "name": "access_token",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 8,
+        "name": "refresh_token",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 9,
+        "name": "expires_at",
+        "type_info": "Timestamptz"
+      },
+      {
+        "ordinal": 10,
+        "name": "created_at",
+        "type_info": "Timestamptz"
+      },
+      {
+        "ordinal": 11,
+        "name": "updated_at",
+        "type_info": "Timestamptz"
+      },
+      {
+        "ordinal": 12,
+        "name": "profile_visibility",
+        "type_info": "Text"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Text",
+        "Text"
+      ]
     },
-    "hash": "beee18374980b6dfc5d73711b0e9b5b7ef942370c5149a775e5f0bc5f8cd40c7"
+    "nullable": [
+      false,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "beee18374980b6dfc5d73711b0e9b5b7ef942370c5149a775e5f0bc5f8cd40c7"
 }

@@ -25,10 +25,6 @@ tracing-subscriber = { version = "0.3", features = [
   "json",
 ] }
 clokwerk = "0.4"
-clickhouse = { features = [
-  "time",
-  "inserter",
-], git = "https://github.com/loyd/clickhouse.rs", rev = "24b39c7" }
 envy = "0.4"
 once_cell.workspace = true
 axum = { version = "0.7.5", features = ["tracing", "macros", "http2", "ws"] }
@@ -69,3 +65,5 @@ rand = "0.8.5"
 ulid = "1.1.0"
 svix-ksuid = { version = "0.7.0", features = ["serde"] }
 regex = "1.10.2"
+bigdecimal = { version = "0.4.5", features = ["serde"] }
+num-bigint = { version = "0.4.5", features = ["serde"] }

@@ -2,17 +2,13 @@
 
 import { Time } from "lightweight-charts";
 import { Chart } from "./Chart";
-import { BasicSaveV1Row } from "@/hooks/useSaves";
+import { BasicSave } from "@/hooks/useSaves";
 
-export default function ProphecyEggsChart({
-  saves,
-}: {
-  saves: BasicSaveV1Row[];
-}) {
+export default function ProphecyEggsChart({ saves }: { saves: BasicSave[] }) {
   return (
     <Chart
       data={saves.map((row) => ({
-        time: row.timestamp as Time,
+        time: (row.timestamp.getTime() / 1000) as Time,
         value: row.eggs_of_prophecy,
       }))}
       valueFormatter={(priceValue: number) =>

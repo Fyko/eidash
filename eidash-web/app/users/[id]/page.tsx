@@ -1,13 +1,12 @@
-"use server";
+"use client";
 
-import { fetchSaves, fetchUser } from "@/actions/user";
 import EarningsBonusChart from "@/components/charts/EarningsBonusChart";
 import MerChart from "@/components/charts/MerChart";
 import ProphecyEggsChart from "@/components/charts/ProphecyEggsChart";
 import SoulEggsChart from "@/components/charts/SoulEggsChart";
-import { formatEIValue } from "@/lib/units";
+import { useUser } from "@/hooks/useAuth";
+import { useClientSaves } from "@/hooks/useSaves";
 import { formatDistance } from "date-fns";
-import { Metadata } from "next";
 
 type Props = {
   params: {
@@ -15,24 +14,23 @@ type Props = {
   };
 };
 
-export default async function UserProfile({ params: { id } }: Props) {
-  const user = await fetchUser(id);
-  const saves = await fetchSaves(id);
+export default function UserProfile({ params: { id } }: Props) {
+  const user = useUser(id);
+  const saves = useClientSaves(id);
 
-  const lastUpdated = (
-    <p>
-      Last updated{" "}
-      <span className="italic">
-        {formatDistance(
-          new Date(saves[saves.length - 1].timestamp * 1000),
-          new Date(),
-          {
+  const lastUpdated =
+    saves.length > 1 ? (
+      <p>
+        Last updated{" "}
+        <span className="italic">
+          {formatDistance(saves[saves.length - 1].timestamp, new Date(), {
             addSuffix: true,
-          }
-        )}
-      </span>
-    </p>
-  );
+          })}
+        </span>
+      </p>
+    ) : (
+      <></>
+    );
 
   return user ? (
     <div className="mx-auto max-w-4xl px-5 py-10">
@@ -78,46 +76,46 @@ export default async function UserProfile({ params: { id } }: Props) {
   );
 }
 
-export async function generateMetadata({
-  params: { id },
-}: Props): Promise<Metadata> {
-  const user = await fetchUser(id);
-  const [save] = await fetchSaves(id, 1)!;
+// export async function generateMetadata({
+//   params: { id },
+// }: Props): Promise<Metadata> {
+//   const user = await fetchUser(id);
+//   const [save] = await fetchSaves(id, 1)!;
 
-  const title = `EIDash - ${user!.username}'s Profile`;
-  const description = `${user!.username} has ${formatEIValue(save.soul_eggs, {
-    trim: true,
-  })} Soul Eggs, ${Math.floor(
-    save.eggs_of_prophecy
-  )} Prophecy Eggs, and an Earnings Bonus of ${formatEIValue(
-    save.computed_earnings_bonus,
-    { trim: true }
-  )}%!`;
+//   const title = `EIDash - ${user!.username}'s Profile`;
+//   const description = `${user!.username} has ${formatEIValue(save.soul_eggs, {
+//     trim: true,
+//   })} Soul Eggs, ${Math.floor(
+//     save.eggs_of_prophecy
+//   )} Prophecy Eggs, and an Earnings Bonus of ${formatEIValue(
+//     save.computed_earnings_bonus,
+//     { trim: true }
+//   )}%!`;
 
-  return {
-    metadataBase: new URL(process.env.NEXT_PUBLIC_VERCEL_URL!),
-    title,
-    description,
-    openGraph: {
-      title,
-      description,
-      images: [
-        {
-          url: "/yeti.png",
-        },
-      ],
-    },
-    twitter: {
-      card: "summary",
-      site: "@fykowo",
-      creator: "@fykowo",
-      title,
-      description,
-      images: [
-        {
-          url: "/yeti.png",
-        },
-      ],
-    },
-  };
-}
+//   return {
+//     metadataBase: new URL(process.env.NEXT_PUBLIC_VERCEL_URL!),
+//     title,
+//     description,
+//     openGraph: {
+//       title,
+//       description,
+//       images: [
+//         {
+//           url: "/yeti.png",
+//         },
+//       ],
+//     },
+//     twitter: {
+//       card: "summary",
+//       site: "@fykowo",
+//       creator: "@fykowo",
+//       title,
+//       description,
+//       images: [
+//         {
+//           url: "/yeti.png",
+//         },
+//       ],
+//     },
+//   };
+// }

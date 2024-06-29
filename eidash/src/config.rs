@@ -27,9 +27,6 @@ pub struct Config {
     /// Allowed CORS origins
     pub cors_allowed_origins: Vec<String>,
 
-    /// The clickhouse URL
-    pub clickhouse_url: String,
-
     /// The frontend URL (http(s)://...)
     pub frontend_url: String,
 

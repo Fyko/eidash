@@ -1,7 +1,6 @@
 use std::sync::atomic::AtomicBool;
 use std::sync::Arc;
 
-use clickhouse::Client as ClickHouseClient;
 use sqlx::PgPool;
 
 use crate::auth::{EmptyAdditionalClaims, OidcClient};
@@ -11,8 +10,6 @@ pub struct InnerAppState {
     pub db: Arc<PgPool>,
     pub api_healthy: Arc<AtomicBool>,
     pub oidc_client: Arc<OidcClient<EmptyAdditionalClaims>>,
-
-    pub clickhouse: Arc<ClickHouseClient>,
 }
 
 pub type AppState = Arc<InnerAppState>;

@@ -1,6 +1,5 @@
-"use server";
+"use client";
 
-import { fetchSaves, fetchUser } from "@/actions/user";
 import CopyUserProfileURLButton from "@/components/CopyUserProfileURLButton";
 import EarningsBonusChart from "@/components/charts/EarningsBonusChart";
 import ProfileVisibilityButton from "@/components/ProfileVisibilityButton";
@@ -10,25 +9,31 @@ import SoulEggsChart from "@/components/charts/SoulEggsChart";
 import Image from "next/image";
 import { formatDistance } from "date-fns";
 import MerChart from "@/components/charts/MerChart";
+import { useAuth } from "@/hooks/useAuth";
+import { useClientSaves } from "@/hooks/useSaves";
 
-export default async function Home() {
-  const user = await fetchUser("@me");
-  const saves = await fetchSaves("@me");
+export default function Home() {
+  const auth = useAuth();
+  const user = auth.user;
+  const saves = useClientSaves("@me");
 
-  const lastUpdated = (
-    <p>
-      Last updated{" "}
-      <span className="italic">
-        {formatDistance(
-          new Date(saves[saves.length - 1].timestamp * 1000),
-          new Date(),
-          {
-            addSuffix: true,
-          }
-        )}
-      </span>
-    </p>
-  );
+  const lastUpdated =
+    saves.length > 1 ? (
+      <p>
+        Last updated{" "}
+        <span className="italic">
+          {formatDistance(
+            new Date(saves[saves.length - 1].timestamp),
+            new Date(),
+            {
+              addSuffix: true,
+            }
+          )}
+        </span>
+      </p>
+    ) : (
+      <></>
+    );
 
   return (
     <div className="mx-auto max-w-4xl px-5 py-10">

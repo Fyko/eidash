@@ -1,95 +1,95 @@
 {
-    "db_name": "PostgreSQL",
-    "query": "update \"user\" set ei_id = $1 where user_id = $2 returning *",
-    "describe": {
-        "columns": [
-            {
-                "ordinal": 0,
-                "name": "user_id",
-                "type_info": "Text"
-            },
-            {
-                "ordinal": 1,
-                "name": "ei_id",
-                "type_info": "Text"
-            },
-            {
-                "ordinal": 2,
-                "name": "openid",
-                "type_info": "Text"
-            },
-            {
-                "ordinal": 3,
-                "name": "email",
-                "type_info": "Varchar"
-            },
-            {
-                "ordinal": 4,
-                "name": "username",
-                "type_info": "Text"
-            },
-            {
-                "ordinal": 5,
-                "name": "points",
-                "type_info": "Int4"
-            },
-            {
-                "ordinal": 6,
-                "name": "token_type",
-                "type_info": "Text"
-            },
-            {
-                "ordinal": 7,
-                "name": "access_token",
-                "type_info": "Text"
-            },
-            {
-                "ordinal": 8,
-                "name": "refresh_token",
-                "type_info": "Text"
-            },
-            {
-                "ordinal": 9,
-                "name": "expires_at",
-                "type_info": "Timestamptz"
-            },
-            {
-                "ordinal": 10,
-                "name": "created_at",
-                "type_info": "Timestamptz"
-            },
-            {
-                "ordinal": 11,
-                "name": "updated_at",
-                "type_info": "Timestamptz"
-            },
-            {
-                "ordinal": 12,
-                "name": "profile_visibility",
-                "type_info": "Text"
-            }
-        ],
-        "parameters": {
-            "Left": [
-                "Text",
-                "Text"
-            ]
-        },
-        "nullable": [
-            false,
-            true,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false
-        ]
+  "db_name": "PostgreSQL",
+  "query": "update \"user\" set ei_id = $1 where user_id = $2 returning *",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "user_id",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 1,
+        "name": "ei_id",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 2,
+        "name": "openid",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 3,
+        "name": "email",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 4,
+        "name": "username",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 5,
+        "name": "points",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 6,
+        "name": "token_type",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 7,
+        "name": "access_token",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 8,
+        "name": "refresh_token",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 9,
+        "name": "expires_at",
+        "type_info": "Timestamptz"
+      },
+      {
+        "ordinal": 10,
+        "name": "created_at",
+        "type_info": "Timestamptz"
+      },
+      {
+        "ordinal": 11,
+        "name": "updated_at",
+        "type_info": "Timestamptz"
+      },
+      {
+        "ordinal": 12,
+        "name": "profile_visibility",
+        "type_info": "Text"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Text",
+        "Text"
+      ]
     },
-    "hash": "0bb8995839c2b8d494eece15d06b08ee03b278652d6c34a8e9b7f8edb03596f2"
+    "nullable": [
+      false,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "0bb8995839c2b8d494eece15d06b08ee03b278652d6c34a8e9b7f8edb03596f2"
 }

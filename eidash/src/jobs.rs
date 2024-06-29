@@ -3,14 +3,13 @@ use std::{sync::Arc, time::Duration};
 use anyhow::Result;
 use clokwerk::{AsyncScheduler, TimeUnits};
 use futures_util::TryStreamExt;
+use num_bigint::BigInt;
+use sqlx::types::BigDecimal;
 use time::OffsetDateTime;
-use tokio::{
-    sync::{mpsc, Semaphore},
-    time::sleep,
-};
+use tokio::{sync::Semaphore, time::sleep};
 
 use crate::{
-    clickhouse::BasicSaveV1Row,
+    db::basic_save_v1::BasicSaveV1Entity,
     ei::{calculate_earnings_bonus, first_contact, get_epic_research_level, EarningsBonusData},
     state::AppState,
 };
@@ -42,37 +41,10 @@ async fn fetch_saves(state: &AppState) -> Result<()> {
     let mut users = sqlx::query!(r#"select user_id, ei_id from "user" where ei_id is not null"#)
         .fetch(&*state.db);
 
-    let mut insert = state
-        .clickhouse
-        .inserter::<BasicSaveV1Row>("basic_save_v1")?
-        .with_timeouts(Some(Duration::from_secs(5)), Some(Duration::from_secs(20)))
-        .with_max_bytes(256 * 1024 * 1024)
-        .with_max_rows(256)
-        .with_period(Some(Duration::from_secs(15)));
-
-    let (insert_tx, mut insert_rx) = mpsc::channel(128);
-    let insert_handle = tokio::spawn(async move {
-        while let Some(row) = insert_rx.recv().await {
-            insert.write(&row).expect("failed to write row");
-            let stats = insert.commit().await.expect("failed to commit");
-            if stats.rows > 0 {
-                tracing::debug!(
-                    "{} bytes, {} rows, {} transactions have been inserted",
-                    stats.bytes,
-                    stats.rows,
-                    stats.transactions,
-                );
-            }
-        }
-
-        insert.end().await.unwrap();
-    });
-
     let sempahore = Arc::new(Semaphore::new(10));
     while let Some(user) = users.try_next().await? {
         tokio::spawn({
             let state = state.clone();
-            let inserter = insert_tx.clone();
             let semaphore_clone = sempahore.clone();
             async move {
                 let permit = semaphore_clone.acquire().await.unwrap();
@@ -97,24 +69,24 @@ async fn fetch_saves(state: &AppState) -> Result<()> {
                     return;
                 };
 
-                let Some(backup_time) = backup
+                let Some(Ok(backup_time)) = backup
                     .settings
                     .and_then(|s| s.last_backup_time)
-                    .map(|t| t as i64)
+                    .map(|t| OffsetDateTime::from_unix_timestamp(t as i64))
                 else {
                     tracing::error!(user = user.user_id, "no backup_time found");
                     return;
                 };
-                let save_exists = state
-                    .clickhouse
-                    .query(
-                        "select ?fields from basic_save_v1 where user_id = ? and backup_time = ?",
-                    )
-                    .bind(&user.user_id)
-                    .bind(backup_time)
-                    .fetch_optional::<BasicSaveV1Row>()
-                    .await
-                    .expect("fetching previous save failed");
+
+                let save_exists = sqlx::query_as!(
+                    BasicSaveV1Entity,
+                    "select * from basic_save_v1 where user_id = $1 and backup_time = $2",
+                    user.user_id,
+                    backup_time
+                )
+                .fetch_optional(&*state.db)
+                .await
+                .expect("fetching previous save failed");
 
                 if save_exists.is_some() {
                     tracing::trace!(
@@ -135,10 +107,11 @@ async fn fetch_saves(state: &AppState) -> Result<()> {
                 //     .await
                 //     .expect("fetching last save failed");
 
-                let soul_eggs = game.soul_eggs_d();
-                let eggs_of_prophecy = game.eggs_of_prophecy();
-                let er_prophecy_bonus_level = get_epic_research_level(&game, "prophecy_bonus");
-                let er_soul_food_level = get_epic_research_level(&game, "soul_eggs");
+                let soul_eggs = game.soul_eggs_d() as u128;
+                let eggs_of_prophecy = game.eggs_of_prophecy() as i32;
+                let er_prophecy_bonus_level =
+                    get_epic_research_level(&game, "prophecy_bonus") as i32;
+                let er_soul_food_level = get_epic_research_level(&game, "soul_eggs") as i32;
 
                 // if let Some(last_save) = last_save {
                 //     if last_save.soul_eggs == soul_eggs
@@ -152,32 +125,43 @@ async fn fetch_saves(state: &AppState) -> Result<()> {
                 // }
 
                 let computed_earnings_bonus = calculate_earnings_bonus(&EarningsBonusData {
-                    soul_eggs,
+                    soul_eggs: soul_eggs as f64,
                     eggs_of_prophecy,
                     er_prophecy_bonus_level,
                     er_soul_food_level,
                 });
 
-                inserter
-                    .send(BasicSaveV1Row {
-                        user_id: user.user_id,
-                        computed_earnings_bonus,
-                        soul_eggs,
-                        eggs_of_prophecy,
-                        er_prophecy_bonus_level,
-                        er_soul_food_level,
-                        timestamp: OffsetDateTime::now_utc(),
-                        backup_time: OffsetDateTime::from_unix_timestamp(backup_time)
-                            .expect("failed to convert backup_time"),
-                    })
-                    .await
-                    .unwrap();
+                if let Err(e) = sqlx::query!(
+                    r#"
+                        insert into basic_save_v1 (
+                            user_id,
+                            computed_earnings_bonus,
+                            soul_eggs,
+                            eggs_of_prophecy,
+                            er_prophecy_bonus_level,
+                            er_soul_food_level,
+                            time,
+                            backup_time
+                        )
+                        values ($1, $2, $3, $4, $5, $6, $7, $8)
+                    "#,
+                    user.user_id,
+                    computed_earnings_bonus,
+                    BigDecimal::from(BigInt::from(soul_eggs)),
+                    eggs_of_prophecy,
+                    er_prophecy_bonus_level,
+                    er_soul_food_level,
+                    OffsetDateTime::now_utc(),
+                    backup_time,
+                )
+                .execute(&*state.db)
+                .await
+                {
+                    tracing::error!(user = user.user_id, "failed to insert save {e:#?}",);
+                }
             }
         });
     }
-
-    drop(insert_tx); // by dropping the insert_tx, the .recv() will yeet once the last user is processed
-    insert_handle.await.unwrap();
 
     Ok(())
 }
