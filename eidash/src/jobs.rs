@@ -131,7 +131,7 @@ async fn fetch_saves(state: &AppState) -> Result<()> {
                     er_soul_food_level,
                 });
 
-                let _ = sqlx::query!(
+                if let Err(e) = sqlx::query!(
                     r#"
                         insert into basic_save_v1 (
                             user_id,
@@ -154,7 +154,11 @@ async fn fetch_saves(state: &AppState) -> Result<()> {
                     OffsetDateTime::now_utc(),
                     backup_time,
                 )
-                .execute(&*state.db);
+                .execute(&*state.db)
+                .await
+                {
+                    tracing::error!(user = user.user_id, "failed to insert save {e:#?}",);
+                }
             }
         });
     }

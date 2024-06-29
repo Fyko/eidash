@@ -125,7 +125,9 @@ async fn submit_eid(
         er_soul_food_level,
     });
 
-    let _ = sqlx::query!(
+    let backup_time =
+        OffsetDateTime::from_unix_timestamp(backup_time).expect("failed to parse backuptime");
+    if let Err(e) = sqlx::query!(
         r#"
             insert into basic_save_v1 (
                 user_id,
@@ -148,7 +150,14 @@ async fn submit_eid(
         OffsetDateTime::now_utc(),
         backup_time,
     )
-    .execute(&*state.db);
+    .execute(&*state.db)
+    .await
+    {
+        tracing::error!(
+            user = user.user_id.to_string(),
+            "failed to insert save {e:#?}",
+        );
+    }
 
     Ok(Json(APIUser::from_row(user)).into_response())
 }

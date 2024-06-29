@@ -1,4 +1,4 @@
-import { BasicSaveV1Row } from "@/actions/user";
+import { BasicSave } from "@/hooks/useSaves";
 
 // Trim trailing zeros, and possibly the decimal point.
 export function trimTrailingZeros(input: string) {
@@ -12,7 +12,7 @@ export function trimTrailingZeros(input: string) {
 
 // Calculate the MER with given Soul Egg count and Prophecy Egg count.
 // `(((91 * (log10(SE) - 18)) + 200 - PE) / 10)`
-export function calculateMer(row: BasicSaveV1Row) {
+export function calculateMer(row: BasicSave) {
   return (
     (91 * (Math.log10(row.soul_eggs) - 18) + 200 - row.eggs_of_prophecy) / 10
   );

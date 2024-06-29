@@ -2,15 +2,15 @@
 
 import { Time } from "lightweight-charts";
 import { Chart } from "./Chart";
-import { BasicSaveV1Row } from "@/hooks/useSaves";
+import { BasicSave } from "@/hooks/useSaves";
 import { formatEIValue } from "@/lib/units";
 import { calculateMer } from "@/lib/math";
 
-export default function MerChart({ saves }: { saves: BasicSaveV1Row[] }) {
+export default function MerChart({ saves }: { saves: BasicSave[] }) {
   return (
     <Chart
       data={saves.map((row) => ({
-        time: row.timestamp as Time,
+        time: (row.timestamp.getTime() / 1000) as Time,
         value: calculateMer(row),
       }))}
       valueFormatter={(priceValue: number) => priceValue.toFixed(2)}

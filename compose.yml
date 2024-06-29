@@ -133,6 +133,4 @@ services:
 volumes:
   authentik-postgres-storage:
   redis-storage:
-  clickhouse-storage:
-  clickhouse-logs:
   timescale-storage:

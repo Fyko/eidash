@@ -13,3 +13,5 @@ target/
 !.env.sample
 .envrc*
 ei-proto/src/ei.rs
+users.sql
+docker/clickhouse/backups

@@ -1,9 +1,11 @@
 "use client";
 
+import { useAuth } from "@/hooks/useAuth";
 import { UserIcon } from "@heroicons/react/24/solid";
 import { useState, useTransition } from "react";
 
 export default function SetEIDForm() {
+  const auth = useAuth();
   const [eiId, setEiId] = useState("");
   const [error, setError] = useState<Error | null>(null);
   const [isPending, startTransition] = useTransition();
@@ -26,6 +28,8 @@ export default function SetEIDForm() {
         setError(new Error(json.message));
         return json;
       }
+
+      await auth.updateUser();
 
       return json;
     });

@@ -2,14 +2,14 @@
 
 import { Time } from "lightweight-charts";
 import { Chart } from "./Chart";
-import { BasicSaveV1Row } from "@/hooks/useSaves";
+import { BasicSave } from "@/hooks/useSaves";
 import { formatEIValue } from "@/lib/units";
 
-export default function SoulEggsChart({ saves }: { saves: BasicSaveV1Row[] }) {
+export default function SoulEggsChart({ saves }: { saves: BasicSave[] }) {
   return (
     <Chart
       data={saves.map((row) => ({
-        time: row.timestamp as Time,
+        time: (row.timestamp.getTime() / 1000) as Time,
         value: row.soul_eggs,
       }))}
       valueFormatter={(priceValue: number) =>
