@@ -2,13 +2,12 @@ use axum::extract::ws::{Message, WebSocket};
 use axum::extract::{ConnectInfo, State, WebSocketUpgrade};
 use axum::response::IntoResponse;
 use axum::routing::any;
-use axum::{Json, Router};
+use axum::Router;
 use std::net::SocketAddr;
 use std::ops::ControlFlow;
 
 use crate::auth::AuthSession;
 use crate::state::AppState;
-use crate::Result;
 
 pub fn router() -> Router<AppState> {
     Router::new().route("/ws", any(ws))
