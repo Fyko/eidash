@@ -1,0 +1,100 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n                insert into \"user\"(\n                    openid, email, username,\n                    token_type, access_token,\n                    refresh_token, expires_at\n                )\n                values($1, $2, $3, $4, $5, $6, $7)\n                on conflict(openid) do update set\n                    email = excluded.email,\n                    username = excluded.username,\n                    token_type = excluded.token_type,\n                    access_token = excluded.access_token,\n                    refresh_token = excluded.refresh_token,\n                    expires_at = excluded.expires_at\n                returning *;\n            ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "user_id",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 1,
+        "name": "ei_id",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 2,
+        "name": "openid",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 3,
+        "name": "email",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 4,
+        "name": "username",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 5,
+        "name": "points",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 6,
+        "name": "token_type",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 7,
+        "name": "access_token",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 8,
+        "name": "refresh_token",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 9,
+        "name": "expires_at",
+        "type_info": "Timestamptz"
+      },
+      {
+        "ordinal": 10,
+        "name": "created_at",
+        "type_info": "Timestamptz"
+      },
+      {
+        "ordinal": 11,
+        "name": "updated_at",
+        "type_info": "Timestamptz"
+      },
+      {
+        "ordinal": 12,
+        "name": "profile_visibility",
+        "type_info": "Text"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Text",
+        "Varchar",
+        "Text",
+        "Text",
+        "Text",
+        "Text",
+        "Timestamptz"
+      ]
+    },
+    "nullable": [
+      false,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "f9c264d47af007bea55d83efa8ca25b425639a9ff1c537aa9c31424de34534df"
+}

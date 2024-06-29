@@ -1,0 +1,65 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "select * from basic_save_v1 where user_id = $1 and backup_time = $2",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "time",
+        "type_info": "Timestamptz"
+      },
+      {
+        "ordinal": 1,
+        "name": "user_id",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 2,
+        "name": "computed_earnings_bonus",
+        "type_info": "Float8"
+      },
+      {
+        "ordinal": 3,
+        "name": "soul_eggs",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 4,
+        "name": "eggs_of_prophecy",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 5,
+        "name": "er_soul_food_level",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 6,
+        "name": "er_prophecy_bonus_level",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 7,
+        "name": "backup_time",
+        "type_info": "Timestamptz"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Text",
+        "Timestamptz"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "d501d971828d39b6010085f94b98093b061051c88dbe4b5efa1f7954aec55199"
+}

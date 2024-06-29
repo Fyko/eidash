@@ -1,0 +1,67 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "select * from basic_save_v1 where user_id = $1 and time >= $2 and time < $3 order by time asc limit $4",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "time",
+        "type_info": "Timestamptz"
+      },
+      {
+        "ordinal": 1,
+        "name": "user_id",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 2,
+        "name": "computed_earnings_bonus",
+        "type_info": "Float8"
+      },
+      {
+        "ordinal": 3,
+        "name": "soul_eggs",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 4,
+        "name": "eggs_of_prophecy",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 5,
+        "name": "er_soul_food_level",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 6,
+        "name": "er_prophecy_bonus_level",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 7,
+        "name": "backup_time",
+        "type_info": "Timestamptz"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Text",
+        "Timestamptz",
+        "Timestamptz",
+        "Int8"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "5da57df05e79ede18d920e8b373cc18d0e77ba11576bf0ed87adb7a76e4c3b0c"
+}
