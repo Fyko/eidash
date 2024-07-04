@@ -1,6 +1,7 @@
 "use client";
 
 import EarningsBonusChart from "@/components/charts/EarningsBonusChart";
+import JerChart from "@/components/charts/JerChart";
 import MerChart from "@/components/charts/MerChart";
 import ProphecyEggsChart from "@/components/charts/ProphecyEggsChart";
 import SoulEggsChart from "@/components/charts/SoulEggsChart";
@@ -53,21 +54,21 @@ export default function UserProfile({ params: { id } }: Props) {
           </h2>
         </div>
         <div className="space-y-4">
-          <h2 className="text-2xl font-bold">Earnings Bonus</h2>
           {lastUpdated}
+          <h2 className="text-2xl font-bold">Earnings Bonus</h2>
           <EarningsBonusChart saves={saves} />
 
           <h2 className="text-2xl font-bold">Soul Eggs</h2>
-          {lastUpdated}
           <SoulEggsChart saves={saves} />
 
           <h2 className="text-2xl font-bold">Prophecy Eggs</h2>
-          {lastUpdated}
           <ProphecyEggsChart saves={saves} />
 
           <h2 className="text-2xl font-bold">MER Value</h2>
-          {lastUpdated}
           <MerChart saves={saves} />
+
+          <h2 className="text-2xl font-bold">JER Value</h2>
+          <JerChart saves={saves} />
         </div>
       </div>
     </div>

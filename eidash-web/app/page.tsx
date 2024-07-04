@@ -11,6 +11,7 @@ import { formatDistance } from "date-fns";
 import MerChart from "@/components/charts/MerChart";
 import { useAuth } from "@/hooks/useAuth";
 import { useClientSaves } from "@/hooks/useSaves";
+import JerChart from "@/components/charts/JerChart";
 
 export default function Home() {
   const auth = useAuth();
@@ -82,21 +83,21 @@ export default function Home() {
           <ProfileVisibilityButton />
         </div>
         <div className="space-y-4">
-          <h2 className="text-2xl font-bold">Earnings Bonus</h2>
           {lastUpdated}
+          <h2 className="text-2xl font-bold">Earnings Bonus</h2>
           <EarningsBonusChart saves={saves} />
 
           <h2 className="text-2xl font-bold">Soul Eggs</h2>
-          {lastUpdated}
           <SoulEggsChart saves={saves} />
 
           <h2 className="text-2xl font-bold">Prophecy Eggs</h2>
-          {lastUpdated}
           <ProphecyEggsChart saves={saves} />
 
           <h2 className="text-2xl font-bold">MER Value</h2>
-          {lastUpdated}
           <MerChart saves={saves} />
+
+          <h2 className="text-2xl font-bold">JER Value</h2>
+          <JerChart saves={saves} />
         </div>
       </div>
     </div>
