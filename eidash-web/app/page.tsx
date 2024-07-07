@@ -14,11 +14,15 @@ import { useAuth } from "@/hooks/useAuth";
 import { useClientSaves } from "@/hooks/useSaves";
 import JerChart from "@/components/charts/JerChart";
 import { useEffect, useRef, useState } from "react";
+import { LastUpdated } from "@/components/LastUpdated";
 
 export default function Home() {
   const auth = useAuth();
   const user = auth.user;
-  const { saves, getLastUpdatedText } = useClientSaves("@me");
+  const { saves } = useClientSaves("@me");
+
+  const latestSaveTimestamp =
+    saves.length > 1 ? saves[saves.length - 1].timestamp : null;
 
   return (
     <div className="mx-auto max-w-4xl px-5 py-10">
@@ -67,11 +71,10 @@ export default function Home() {
           <ProfileVisibilityButton />
         </div>
         <div className="space-y-4">
-          {saves.length > 1 && (
-            <p>
-              Last updated{" "}
-              <span className="italic">{getLastUpdatedText()}</span>
-            </p>
+          {latestSaveTimestamp ? (
+            <LastUpdated timestamp={latestSaveTimestamp} />
+          ) : (
+            <></>
           )}
           <h2 className="text-2xl font-bold">Earnings Bonus</h2>
           <EarningsBonusChart saves={saves} />

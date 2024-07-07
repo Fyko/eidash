@@ -33,14 +33,8 @@ export interface BasicSave {
   backup_time: Date;
 }
 
-interface UseClientSavesResult {
-  saves: BasicSave[];
-  getLastUpdatedText: () => string;
-}
-
-export function useClientSaves(userId = "@me"): UseClientSavesResult {
+export function useClientSaves(userId = "@me"): BasicSave[] {
   const [saves, setSaves] = useState<BasicSave[]>([]);
-  const [currentTime, setCurrentTime] = useState(new Date());
 
   const fetchSaves = useCallback(async () => {
     const res = await fetch(`/api/users/${userId}/basic-save-v1`, {
@@ -78,29 +72,5 @@ export function useClientSaves(userId = "@me"): UseClientSavesResult {
     return () => clearInterval(interval);
   }, [fetchSaves]);
 
-  // Update the current time every second
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentTime(new Date());
-    }, 1000);
-    return () => clearInterval(interval);
-  }, []);
-
-  const getLastUpdatedText = () => {
-    if (saves.length > 1) {
-      return formatDistanceStrict(
-        new Date(saves[saves.length - 1].timestamp),
-        currentTime,
-        {
-          addSuffix: true,
-        }
-      );
-    }
-    return "";
-  };
-
-  return {
-    saves,
-    getLastUpdatedText,
-  };
+  return saves;
 }

@@ -5,6 +5,7 @@ import JerChart from "@/components/charts/JerChart";
 import MerChart from "@/components/charts/MerChart";
 import ProphecyEggsChart from "@/components/charts/ProphecyEggsChart";
 import SoulEggsChart from "@/components/charts/SoulEggsChart";
+import { LastUpdated } from "@/components/LastUpdated";
 import { useUser } from "@/hooks/useAuth";
 import { useClientSaves } from "@/hooks/useSaves";
 import { formatDistance } from "date-fns";
@@ -17,7 +18,10 @@ type Props = {
 
 export default function UserProfile({ params: { id } }: Props) {
   const user = useUser(id);
-  const { saves, getLastUpdatedText } = useClientSaves(id);
+  const { saves } = useClientSaves(id);
+
+  const latestSaveTimestamp =
+    saves.length > 1 ? saves[saves.length - 1].timestamp : null;
 
   return user ? (
     <div className="mx-auto max-w-4xl px-5 py-10">
@@ -40,11 +44,10 @@ export default function UserProfile({ params: { id } }: Props) {
           </h2>
         </div>
         <div className="space-y-4">
-          {saves.length > 1 && (
-            <p>
-              Last updated{" "}
-              <span className="italic">{getLastUpdatedText()}</span>
-            </p>
+          {latestSaveTimestamp ? (
+            <LastUpdated timestamp={latestSaveTimestamp} />
+          ) : (
+            <></>
           )}
           <h2 className="text-2xl font-bold">Earnings Bonus</h2>
           <EarningsBonusChart saves={saves} />
