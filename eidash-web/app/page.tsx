@@ -19,7 +19,7 @@ import { LastUpdated } from "@/components/LastUpdated";
 export default function Home() {
   const auth = useAuth();
   const user = auth.user;
-  const { saves } = useClientSaves("@me");
+  const saves = useClientSaves("@me");
 
   const latestSaveTimestamp =
     saves.length > 1 ? saves[saves.length - 1].timestamp : null;

@@ -18,7 +18,7 @@ type Props = {
 
 export default function UserProfile({ params: { id } }: Props) {
   const user = useUser(id);
-  const { saves } = useClientSaves(id);
+  const saves = useClientSaves(id);
 
   const latestSaveTimestamp =
     saves.length > 1 ? saves[saves.length - 1].timestamp : null;
