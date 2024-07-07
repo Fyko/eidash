@@ -1,5 +1,6 @@
 "use client";
 
+import ClothedEarningsBonusChart from "@/components/charts/ClothedEarningsBonusChart";
 import CopyUserProfileURLButton from "@/components/CopyUserProfileURLButton";
 import EarningsBonusChart from "@/components/charts/EarningsBonusChart";
 import ProfileVisibilityButton from "@/components/ProfileVisibilityButton";
@@ -92,6 +93,11 @@ export default function Home() {
 
           <h2 className="text-2xl font-bold">Prophecy Eggs</h2>
           <ProphecyEggsChart saves={saves} />
+
+          <h2 className="text-2xl font-bold">Clothed Earnings Bonus</h2>
+          <ClothedEarningsBonusChart saves={saves} />
+
+          <h1 className="text-4xl font-bold">Formulae</h1>
 
           <h2 className="text-2xl font-bold">MER Value</h2>
           <MerChart saves={saves} />

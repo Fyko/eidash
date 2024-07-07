@@ -15,6 +15,7 @@ export interface APIBasicSaveV1 {
   eggs_of_prophecy: number;
   er_soul_food_level: number;
   er_prophecy_bonus_level: number;
+  clothed_earnings_bonus: number | null;
   time: string;
   backup_time: string;
 }
@@ -26,6 +27,7 @@ export interface BasicSave {
   eggs_of_prophecy: number;
   er_soul_food_level: number;
   er_prophecy_bonus_level: number;
+  clothed_earnings_bonus: number | null;
   timestamp: Date;
   backup_time: Date;
 }
@@ -102,6 +104,7 @@ export function useClientSaves(userId = "@me") {
         eggs_of_prophecy: row.eggs_of_prophecy,
         er_soul_food_level: row.er_soul_food_level,
         er_prophecy_bonus_level: row.er_prophecy_bonus_level,
+        clothed_earnings_bonus: row.clothed_earnings_bonus,
 
         // custom
         soul_eggs: parseFloat(row.soul_eggs),

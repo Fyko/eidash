@@ -6,6 +6,7 @@ import {
   AreaData,
   Time,
   WhitespaceData,
+  PriceLineOptions,
 } from "lightweight-charts";
 import React, { useEffect, useRef } from "react";
 
@@ -57,6 +58,7 @@ export const themeColors = {
 export interface ChartProps {
   data: (AreaData<Time> | WhitespaceData<Time>)[];
   valueFormatter?: (value: number) => string;
+  priceLines?: PriceLineOptions[];
   colors?: {
     CHART_BACKGROUND_COLOR?: string;
     LINE_LINE_COLOR?: string;
@@ -76,6 +78,7 @@ export const Chart = (props: ChartProps) => {
       AREA_TOP_COLOR: areaTopColor,
       AREA_BOTTOM_COLOR: areaBottomColor,
     } = {},
+    priceLines,
   } = props;
 
   const chartContainerRef = useRef<HTMLDivElement>(null);
@@ -112,6 +115,9 @@ export const Chart = (props: ChartProps) => {
       bottomColor: areaBottomColor ?? themeColors.DARK.AREA_BOTTOM_COLOR,
     });
     newSeries.setData(data);
+    for (const priceLine of priceLines ?? []) {
+      newSeries.createPriceLine(priceLine);
+    }
 
     window.addEventListener("resize", handleResize);
 
@@ -128,6 +134,7 @@ export const Chart = (props: ChartProps) => {
     areaTopColor,
     areaBottomColor,
     props.valueFormatter,
+    priceLines,
   ]);
 
   return <div className="w-full" ref={chartContainerRef} />;

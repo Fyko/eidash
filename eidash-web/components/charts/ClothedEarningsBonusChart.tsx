@@ -8,10 +8,12 @@ import { BasicSave } from "@/hooks/useSaves";
 export default function EarningsBonusChart({ saves }: { saves: BasicSave[] }) {
   return (
     <Chart
-      data={saves.map((row) => ({
-        time: (row.timestamp.getTime() / 1000) as Time,
-        value: row.computed_earnings_bonus * 100,
-      }))}
+      data={saves
+        .filter((s) => typeof s.clothed_earnings_bonus === "number")
+        .map((row) => ({
+          time: (row.timestamp.getTime() / 1000) as Time,
+          value: row.clothed_earnings_bonus! * 100,
+        }))}
       valueFormatter={(priceValue: number) =>
         `${formatEIValue(priceValue, { trim: true })}%`
       }

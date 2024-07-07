@@ -10,7 +10,10 @@ use tokio::{sync::Semaphore, time::sleep};
 
 use crate::{
     db::basic_save_v1::BasicSaveV1Entity,
-    ei::{calculate_earnings_bonus, first_contact, get_epic_research_level, EarningsBonusData},
+    ei::{
+        calculate_clothed::deterministic_clothed_eb, calculate_earnings_bonus, first_contact,
+        get_epic_research_level, EarningsBonusData,
+    },
     state::AppState,
 };
 
@@ -64,13 +67,14 @@ async fn fetch_saves(state: &AppState) -> Result<()> {
                     return;
                 };
 
-                let Some(game) = backup.game else {
+                let Some(ref game) = backup.game else {
                     tracing::error!("No game found for user {}", user.user_id);
                     return;
                 };
 
                 let Some(Ok(backup_time)) = backup
                     .settings
+                    .as_ref()
                     .and_then(|s| s.last_backup_time)
                     .map(|t| OffsetDateTime::from_unix_timestamp(t as i64))
                 else {
@@ -78,24 +82,24 @@ async fn fetch_saves(state: &AppState) -> Result<()> {
                     return;
                 };
 
-                let save_exists = sqlx::query_as!(
-                    BasicSaveV1Entity,
-                    "select * from basic_save_v1 where user_id = $1 and backup_time = $2",
-                    user.user_id,
-                    backup_time
-                )
-                .fetch_optional(&*state.db)
-                .await
-                .expect("fetching previous save failed");
+                // let save_exists = sqlx::query_as!(
+                //     BasicSaveV1Entity,
+                //     "select * from basic_save_v1 where user_id = $1 and backup_time = $2",
+                //     user.user_id,
+                //     backup_time
+                // )
+                // .fetch_optional(&*state.db)
+                // .await
+                // .expect("fetching previous save failed");
 
-                if save_exists.is_some() {
-                    tracing::trace!(
-                        user = user.user_id,
-                        ?backup_time,
-                        "save already exists, skipping"
-                    );
-                    return;
-                }
+                // if save_exists.is_some() {
+                //     tracing::trace!(
+                //         user = user.user_id,
+                //         ?backup_time,
+                //         "save already exists, skipping"
+                //     );
+                //     return;
+                // }
 
                 // let last_save = state
                 //     .clickhouse
@@ -124,12 +128,17 @@ async fn fetch_saves(state: &AppState) -> Result<()> {
                 //     }
                 // }
 
-                let computed_earnings_bonus = calculate_earnings_bonus(&EarningsBonusData {
-                    soul_eggs: soul_eggs as f64,
-                    eggs_of_prophecy,
-                    er_prophecy_bonus_level,
-                    er_soul_food_level,
-                });
+                let computed_earnings_bonus = calculate_earnings_bonus(
+                    &EarningsBonusData {
+                        soul_eggs: soul_eggs as f64,
+                        eggs_of_prophecy,
+                        er_prophecy_bonus_level,
+                        er_soul_food_level,
+                    },
+                    None,
+                );
+
+                let best_clothed_eb = deterministic_clothed_eb(&backup);
 
                 if let Err(e) = sqlx::query!(
                     r#"
@@ -140,10 +149,11 @@ async fn fetch_saves(state: &AppState) -> Result<()> {
                             eggs_of_prophecy,
                             er_prophecy_bonus_level,
                             er_soul_food_level,
+                            clothed_earnings_bonus,
                             time,
                             backup_time
                         )
-                        values ($1, $2, $3, $4, $5, $6, $7, $8)
+                        values ($1, $2, $3, $4, $5, $6, $7, $8, $9)
                     "#,
                     user.user_id,
                     computed_earnings_bonus,
@@ -151,6 +161,7 @@ async fn fetch_saves(state: &AppState) -> Result<()> {
                     eggs_of_prophecy,
                     er_prophecy_bonus_level,
                     er_soul_food_level,
+                    best_clothed_eb,
                     OffsetDateTime::now_utc(),
                     backup_time,
                 )

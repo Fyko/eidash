@@ -22,6 +22,7 @@ pub struct BasicSaveV1Entity {
     pub eggs_of_prophecy: i32,
     pub er_soul_food_level: i32,
     pub er_prophecy_bonus_level: i32,
+    pub clothed_earnings_bonus: Option<f64>,
     pub backup_time: Timestamptz,
     pub time: Timestamptz,
 }
@@ -38,6 +39,7 @@ pub struct APIBasicSaveV1 {
     pub eggs_of_prophecy: i32,
     pub er_soul_food_level: i32,
     pub er_prophecy_bonus_level: i32,
+    pub clothed_earnings_bonus: Option<f64>,
     pub backup_time: Timestamptz,
     pub time: Timestamptz,
 }
@@ -51,6 +53,7 @@ impl From<BasicSaveV1Entity> for APIBasicSaveV1 {
             eggs_of_prophecy: entity.eggs_of_prophecy,
             er_soul_food_level: entity.er_soul_food_level,
             er_prophecy_bonus_level: entity.er_prophecy_bonus_level,
+            clothed_earnings_bonus: entity.clothed_earnings_bonus,
             backup_time: entity.backup_time,
             time: entity.time,
         }

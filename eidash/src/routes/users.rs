@@ -118,12 +118,15 @@ async fn submit_eid(
     let er_prophecy_bonus_level = get_epic_research_level(&game, "prophecy_bonus") as i32;
     let er_soul_food_level = get_epic_research_level(&game, "soul_eggs") as i32;
 
-    let computed_earnings_bonus = calculate_earnings_bonus(&EarningsBonusData {
-        soul_eggs: soul_eggs as f64,
-        eggs_of_prophecy,
-        er_prophecy_bonus_level,
-        er_soul_food_level,
-    });
+    let computed_earnings_bonus = calculate_earnings_bonus(
+        &EarningsBonusData {
+            soul_eggs: soul_eggs as f64,
+            eggs_of_prophecy,
+            er_prophecy_bonus_level,
+            er_soul_food_level,
+        },
+        None,
+    );
 
     let backup_time =
         OffsetDateTime::from_unix_timestamp(backup_time).expect("failed to parse backuptime");
