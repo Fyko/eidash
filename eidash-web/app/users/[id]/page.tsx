@@ -17,21 +17,7 @@ type Props = {
 
 export default function UserProfile({ params: { id } }: Props) {
   const user = useUser(id);
-  const saves = useClientSaves(id);
-
-  const lastUpdated =
-    saves.length > 1 ? (
-      <p>
-        Last updated{" "}
-        <span className="italic">
-          {formatDistance(saves[saves.length - 1].timestamp, new Date(), {
-            addSuffix: true,
-          })}
-        </span>
-      </p>
-    ) : (
-      <></>
-    );
+  const { saves, getLastUpdatedText } = useClientSaves(id);
 
   return user ? (
     <div className="mx-auto max-w-4xl px-5 py-10">
@@ -54,7 +40,12 @@ export default function UserProfile({ params: { id } }: Props) {
           </h2>
         </div>
         <div className="space-y-4">
-          {lastUpdated}
+          {saves.length > 1 && (
+            <p>
+              Last updated{" "}
+              <span className="italic">{getLastUpdatedText()}</span>
+            </p>
+          )}
           <h2 className="text-2xl font-bold">Earnings Bonus</h2>
           <EarningsBonusChart saves={saves} />
 
