@@ -28,7 +28,6 @@ clokwerk = "0.4"
 envy = "0.4"
 once_cell.workspace = true
 axum = { version = "0.7.5", features = ["tracing", "macros", "http2", "ws"] }
-axum-streams = { version = "0.14", features = ["json"] }
 anyhow = "1.0.75"
 tower-http = { version = "0.5.0", features = [
   "tracing",

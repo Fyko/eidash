@@ -243,26 +243,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "axum-streams"
-version = "0.14.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "22a615a041cc98964bf3bd8f0d8d4d23e0f40510b40c7ebbc6e99321c722ea60"
-dependencies = [
- "axum",
- "bytes",
- "cargo-husky",
- "futures",
- "http 1.1.0",
- "http-body 1.0.0",
- "mime",
- "serde",
- "serde_json",
- "tokio",
- "tokio-stream",
- "tokio-util",
-]
-
-[[package]]
 name = "backtrace"
 version = "0.3.73"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -410,12 +390,6 @@ dependencies = [
  "bytes",
  "either",
 ]
-
-[[package]]
-name = "cargo-husky"
-version = "1.5.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7b02b629252fe8ef6460461409564e2c21d0c8e77e0944f3d189ff06c4e932ad"
 
 [[package]]
 name = "cc"
@@ -795,7 +769,6 @@ dependencies = [
  "axum",
  "axum-core",
  "axum-login",
- "axum-streams",
  "bigdecimal 0.4.5",
  "clokwerk",
  "dotenvy",
