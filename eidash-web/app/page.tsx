@@ -8,34 +8,17 @@ import ProphecyEggsChart from "@/components/charts/ProphecyEggsChart";
 import SetEIDForm from "@/components/SetEIDForm";
 import SoulEggsChart from "@/components/charts/SoulEggsChart";
 import Image from "next/image";
-import { formatDistance } from "date-fns";
+import { formatDistance, formatDistanceStrict } from "date-fns";
 import MerChart from "@/components/charts/MerChart";
 import { useAuth } from "@/hooks/useAuth";
 import { useClientSaves } from "@/hooks/useSaves";
 import JerChart from "@/components/charts/JerChart";
+import { useEffect, useRef, useState } from "react";
 
 export default function Home() {
   const auth = useAuth();
   const user = auth.user;
-  const saves = useClientSaves("@me");
-
-  const lastUpdated =
-    saves.length > 1 ? (
-      <p>
-        Last updated{" "}
-        <span className="italic">
-          {formatDistance(
-            new Date(saves[saves.length - 1].timestamp),
-            new Date(),
-            {
-              addSuffix: true,
-            }
-          )}
-        </span>
-      </p>
-    ) : (
-      <></>
-    );
+  const { saves, getLastUpdatedText } = useClientSaves("@me");
 
   return (
     <div className="mx-auto max-w-4xl px-5 py-10">
@@ -84,7 +67,12 @@ export default function Home() {
           <ProfileVisibilityButton />
         </div>
         <div className="space-y-4">
-          {lastUpdated}
+          {saves.length > 1 && (
+            <p>
+              Last updated{" "}
+              <span className="italic">{getLastUpdatedText()}</span>
+            </p>
+          )}
           <h2 className="text-2xl font-bold">Earnings Bonus</h2>
           <EarningsBonusChart saves={saves} />
 
