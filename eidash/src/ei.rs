@@ -67,9 +67,6 @@ pub fn calculate_earnings_bonus(
     data: &EarningsBonusData,
     artifact_bonus: Option<&mut ArtifactBonus>,
 ) -> f64 {
-    println!("Data: {:?}", data);
-    println!("Artifact Bonus: {:?}", artifact_bonus);
-
     let mut soul_egg_bonus = 0.1 + ((data.er_soul_food_level as f64) * 0.01);
     // + artifact_bonus.as_ref().map_or(0.0, |b| b.soul_egg_bonus);
 
