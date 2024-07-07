@@ -17,8 +17,8 @@ pub fn deterministic_clothed_eb(backup: &Backup) -> f64 {
     let game = backup.game.as_ref().unwrap();
     let soul_eggs = game.soul_eggs_d() as u128;
     let eggs_of_prophecy = game.eggs_of_prophecy() as i32;
-    let er_prophecy_bonus_level = get_epic_research_level(&game, "prophecy_bonus") as i32;
-    let er_soul_food_level = get_epic_research_level(&game, "soul_eggs") as i32;
+    let er_prophecy_bonus_level = get_epic_research_level(game, "prophecy_bonus") as i32;
+    let er_soul_food_level = get_epic_research_level(game, "soul_eggs") as i32;
 
     let mut ebs = HashMap::<usize, f64>::new();
 
@@ -47,35 +47,32 @@ pub fn deterministic_clothed_eb(backup: &Backup) -> f64 {
             // Level::Greater => "GREATER", T4
 
             let item_name = item_spec.name();
-            match item_name {
-                // name = BookOFBasan, T1C, +0.25% Prophecy Egg Bonus
-                // name = BookOFBasan, T2C, +0.50% Prophecy Egg Bonus
-                // name = BookOFBasan, T3C, +0.75% Prophecy Egg Bonus
-                // name = BookOFBasan, T3E, +0.80% Prophecy Egg Bonus
-                // name = BookOFBasan, T4C, +1% Prophecy Egg Bonus
-                // name = BookOFBasan, T4E, +1.10% Prophecy Egg Bonus
-                // name = BookOFBasan, T4L, +1.20% Prophecy Egg Bonus
-                Name::BookOfBasan => {
-                    let rarity = item_spec.rarity();
-                    let boost = match item_spec.level() {
-                        Level::Inferior => 0.0025,
-                        Level::Lesser => 0.005,
-                        Level::Normal => match rarity {
-                            Rarity::Common => 0.0075,
-                            Rarity::Epic => 0.0080,
-                            _ => 0.0, // theoreically unreeachable
-                        },
-                        Level::Greater => match rarity {
-                            Rarity::Common => 0.010,
-                            Rarity::Epic => 0.011,
-                            Rarity::Legendary => 0.012,
-                            _ => 0.0, // theoreically unreeachable
-                        },
-                        Level::Superior => 0.0, // theoretically unreachable
-                    };
-                    artifact_bonus.prophecy_egg_bonus += boost;
-                }
-                _ => {}
+            // name = BookOFBasan, T1C, +0.25% Prophecy Egg Bonus
+            // name = BookOFBasan, T2C, +0.50% Prophecy Egg Bonus
+            // name = BookOFBasan, T3C, +0.75% Prophecy Egg Bonus
+            // name = BookOFBasan, T3E, +0.80% Prophecy Egg Bonus
+            // name = BookOFBasan, T4C, +1% Prophecy Egg Bonus
+            // name = BookOFBasan, T4E, +1.10% Prophecy Egg Bonus
+            // name = BookOFBasan, T4L, +1.20% Prophecy Egg Bonus
+            if item_name == Name::BookOfBasan {
+                let rarity = item_spec.rarity();
+                let boost = match item_spec.level() {
+                    Level::Inferior => 0.0025,
+                    Level::Lesser => 0.005,
+                    Level::Normal => match rarity {
+                        Rarity::Common => 0.0075,
+                        Rarity::Epic => 0.0080,
+                        _ => 0.0, // theoreically unreeachable
+                    },
+                    Level::Greater => match rarity {
+                        Rarity::Common => 0.010,
+                        Rarity::Epic => 0.011,
+                        Rarity::Legendary => 0.012,
+                        Rarity::Rare => 0.0, // theoreically unreeachable
+                    },
+                    Level::Superior => 0.0, // theoretically unreachable
+                };
+                artifact_bonus.prophecy_egg_bonus += boost;
             };
 
             // let item_name = item_name.as_str_name();

@@ -9,7 +9,6 @@ use time::OffsetDateTime;
 use tokio::{sync::Semaphore, time::sleep};
 
 use crate::{
-    db::basic_save_v1::BasicSaveV1Entity,
     ei::{
         calculate_clothed::deterministic_clothed_eb, calculate_earnings_bonus, first_contact,
         get_epic_research_level, EarningsBonusData,
@@ -114,8 +113,8 @@ async fn fetch_saves(state: &AppState) -> Result<()> {
                 let soul_eggs = game.soul_eggs_d() as u128;
                 let eggs_of_prophecy = game.eggs_of_prophecy() as i32;
                 let er_prophecy_bonus_level =
-                    get_epic_research_level(&game, "prophecy_bonus") as i32;
-                let er_soul_food_level = get_epic_research_level(&game, "soul_eggs") as i32;
+                    get_epic_research_level(game, "prophecy_bonus") as i32;
+                let er_soul_food_level = get_epic_research_level(game, "soul_eggs") as i32;
 
                 // if let Some(last_save) = last_save {
                 //     if last_save.soul_eggs == soul_eggs

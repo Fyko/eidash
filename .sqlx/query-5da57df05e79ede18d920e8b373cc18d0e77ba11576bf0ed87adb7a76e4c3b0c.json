@@ -42,6 +42,11 @@
         "ordinal": 7,
         "name": "backup_time",
         "type_info": "Timestamptz"
+      },
+      {
+        "ordinal": 8,
+        "name": "clothed_earnings_bonus",
+        "type_info": "Float8"
       }
     ],
     "parameters": {
@@ -60,7 +65,8 @@
       false,
       false,
       false,
-      false
+      false,
+      true
     ]
   },
   "hash": "5da57df05e79ede18d920e8b373cc18d0e77ba11576bf0ed87adb7a76e4c3b0c"
