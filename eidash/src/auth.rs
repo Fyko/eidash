@@ -153,6 +153,8 @@ impl AuthnBackend for OidcBackend {
             .request_async(async_http_client)
             .await?;
 
+        tracing::info!("token_response: {token_response:#?}");
+
         let id_token = token_response
             .id_token()
             .ok_or(AuthenticateError::IdTokenMissing)?;
