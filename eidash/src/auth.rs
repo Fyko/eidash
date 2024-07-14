@@ -175,10 +175,7 @@ impl AuthnBackend for OidcBackend {
         }
 
         // now do refresh token stuff
-        let refresh_token = token_response
-            .refresh_token()
-            .ok_or(AuthenticateError::RefreshTokenMissing)?;
-        let refresh_token = refresh_token.secret().to_string();
+        let refresh_token = String::new();
 
         let now = OffsetDateTime::now_utc();
         let expires_at =
