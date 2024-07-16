@@ -6,6 +6,7 @@ use ei_proto::{
 };
 
 pub mod calculate_clothed;
+pub mod collect_backup;
 
 /// Performs the first contact with the EI server.
 pub async fn first_contact(ei_id: &str) -> Result<EggIncFirstContactResponse, BoxDynError> {

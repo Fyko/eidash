@@ -23,6 +23,7 @@ pub struct BasicSaveV1Entity {
     pub er_soul_food_level: i32,
     pub er_prophecy_bonus_level: i32,
     pub clothed_earnings_bonus: Option<f64>,
+    pub prestige_count: Option<i32>,
     pub backup_time: Timestamptz,
     pub time: Timestamptz,
 }

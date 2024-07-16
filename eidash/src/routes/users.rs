@@ -3,15 +3,11 @@ use axum::routing::{get, post};
 use axum::{Json, Router};
 use axum_core::response::{IntoResponse, Response};
 use eidash_id::markers::UserId;
-use num_bigint::BigInt;
-use sqlx::types::BigDecimal;
-use time::OffsetDateTime;
 
 use crate::auth::AuthSession;
 use crate::db::user::{get_by_user_id, UserEntity};
-use crate::ei::{
-    calculate_earnings_bonus, first_contact, get_epic_research_level, EarningsBonusData,
-};
+use crate::ei::collect_backup::collect_backup;
+use crate::ei::first_contact;
 use crate::error::{AxumResult, Error};
 use crate::models::api_user::APIUser;
 use crate::state::AppState;
@@ -37,7 +33,7 @@ async fn get_user(
             .map_or(false, |u| u.user_id == user_id);
 
     let user_id = if querying_self {
-        // only authorized users can query themselves
+        // only authorized users can query @me
         let Some(auth_user) = auth_session.user else {
             return Err(Error::Unauthorized);
         };
@@ -99,68 +95,7 @@ async fn submit_eid(
         return Ok(Json(APIUser::from_row(user)).into_response());
     };
 
-    let Some(game) = backup.game else {
-        tracing::error!(user = user.user_id.to_string(), "no game found");
-        return Ok(Json(APIUser::from_row(user)).into_response());
-    };
-
-    let Some(backup_time) = backup
-        .settings
-        .and_then(|s| s.last_backup_time)
-        .map(|t| t as i64)
-    else {
-        tracing::error!(user = user.user_id.to_string(), "no backup_time found");
-        return Ok(Json(APIUser::from_row(user)).into_response());
-    };
-
-    let soul_eggs = game.soul_eggs_d() as u128;
-    let eggs_of_prophecy = game.eggs_of_prophecy() as i32;
-    let er_prophecy_bonus_level = get_epic_research_level(&game, "prophecy_bonus") as i32;
-    let er_soul_food_level = get_epic_research_level(&game, "soul_eggs") as i32;
-
-    let computed_earnings_bonus = calculate_earnings_bonus(
-        &EarningsBonusData {
-            soul_eggs: soul_eggs as f64,
-            eggs_of_prophecy,
-            er_prophecy_bonus_level,
-            er_soul_food_level,
-        },
-        None,
-    );
-
-    let backup_time =
-        OffsetDateTime::from_unix_timestamp(backup_time).expect("failed to parse backuptime");
-    if let Err(e) = sqlx::query!(
-        r#"
-            insert into basic_save_v1 (
-                user_id,
-                computed_earnings_bonus,
-                soul_eggs,
-                eggs_of_prophecy,
-                er_prophecy_bonus_level,
-                er_soul_food_level,
-                time,
-                backup_time
-            )
-            values ($1, $2, $3, $4, $5, $6, $7, $8)
-        "#,
-        user.user_id.to_string(),
-        computed_earnings_bonus,
-        BigDecimal::from(BigInt::from(soul_eggs)),
-        eggs_of_prophecy,
-        er_prophecy_bonus_level,
-        er_soul_food_level,
-        OffsetDateTime::now_utc(),
-        backup_time,
-    )
-    .execute(&*state.db)
-    .await
-    {
-        tracing::error!(
-            user = user.user_id.to_string(),
-            "failed to insert save {e:#?}",
-        );
-    }
+    collect_backup(&state.db, &user, &backup).await?;
 
     Ok(Json(APIUser::from_row(user)).into_response())
 }

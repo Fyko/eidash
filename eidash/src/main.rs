@@ -5,7 +5,7 @@ use eidash::auth::create_oidc_client;
 use eidash::config::{get_config, CONFIG};
 use eidash::create_router;
 use eidash::db::create_db;
-use eidash::state::InnerAppState;
+use eidash::state::AppState;
 use tokio::net::TcpListener;
 use tracing_subscriber::prelude::*;
 use tracing_subscriber::{fmt, EnvFilter, Registry};
@@ -38,11 +38,11 @@ async fn main() -> anyhow::Result<()> {
         .await?,
     );
 
-    let state = Arc::new(InnerAppState {
+    let state = AppState {
         db,
         oidc_client,
         api_healthy: Arc::new(false.into()),
-    });
+    };
 
     tokio::spawn({
         let state = state.clone();
