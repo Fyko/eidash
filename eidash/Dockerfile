@@ -17,7 +17,7 @@ RUN apt update && apt install -y libssl-dev pkg-config g++ curl libprotobuf-dev 
 COPY --from=planner /app/recipe.json recipe.json
 RUN cargo chef cook --release --recipe-path recipe.json
 COPY . .
-RUN cargo build --release --bin eidash --no-default-features
+RUN cargo build --release --bin eidash
 
 FROM debian:bookworm AS runtime
 WORKDIR /app

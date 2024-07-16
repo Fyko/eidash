@@ -1,0 +1,22 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n\t\t\tinsert into basic_save_v1 (\n\t\t\t\tuser_id,\n\t\t\t\tcomputed_earnings_bonus,\n\t\t\t\tsoul_eggs,\n\t\t\t\teggs_of_prophecy,\n\t\t\t\ter_prophecy_bonus_level,\n\t\t\t\ter_soul_food_level,\n\t\t\t\tclothed_earnings_bonus,\n\t\t\t\ttime,\n\t\t\t\tbackup_time\n\t\t\t)\n\t\t\tvalues ($1, $2, $3, $4, $5, $6, $7, $8, $9)\n\t\t",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Text",
+        "Float8",
+        "Numeric",
+        "Int4",
+        "Int4",
+        "Int4",
+        "Float8",
+        "Timestamptz",
+        "Timestamptz"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "d860035e6806651c098c58b4120db9cd9deb12a5b5ff537de82247ee4573cf64"
+}

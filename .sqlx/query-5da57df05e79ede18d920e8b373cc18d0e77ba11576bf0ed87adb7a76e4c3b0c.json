@@ -47,6 +47,11 @@
         "ordinal": 8,
         "name": "clothed_earnings_bonus",
         "type_info": "Float8"
+      },
+      {
+        "ordinal": 9,
+        "name": "prestige_count",
+        "type_info": "Int4"
       }
     ],
     "parameters": {
@@ -66,6 +71,7 @@
       false,
       false,
       false,
+      true,
       true
     ]
   },
