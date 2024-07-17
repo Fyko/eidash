@@ -2,9 +2,9 @@
 
 > A dashboard for Egg, Inc.
 
-## Devleopment
+## Development
 
-Coming soon:tm:
+Coming soon™️
 
 #### License
 
