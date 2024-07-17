@@ -43,8 +43,7 @@ pub async fn collect_backup(db: &PgPool, user: &UserEntity, backup: &Backup) -> 
     let prestige_count = backup
         .stats
         .as_ref()
-        .map(|s| s.num_prestiges() as i32)
-        .unwrap_or(0);
+        .map_or(0, |s| s.num_prestiges() as i32);
 
     if sqlx::query!(
         r#"
