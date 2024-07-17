@@ -9,6 +9,10 @@ use crate::ei::ArtifactBonus;
 
 use super::{calculate_earnings_bonus, get_epic_research_level, EarningsBonusData};
 
+/// Determines the highest Clothed Earnings Bonus value for a given user.
+///
+/// This function takes a backup and iteratrs through all saved artifact sets, calculating the
+/// EB for each set, returning the highest one.
 pub fn deterministic_clothed_eb(backup: &Backup) -> f64 {
     let artifact_db = backup.artifacts_db.as_ref().unwrap();
     let saved_sets = &artifact_db.saved_artifact_sets;

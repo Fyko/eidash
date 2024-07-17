@@ -14,9 +14,6 @@ use tracing_subscriber::{fmt, EnvFilter, Registry};
 async fn main() -> anyhow::Result<()> {
     #[cfg(debug_assertions)]
     dotenvy::dotenv().ok();
-
-    let _ = get_config();
-
     Registry::default()
         .with(
             EnvFilter::try_from_default_env()
@@ -24,6 +21,8 @@ async fn main() -> anyhow::Result<()> {
         )
         .with(fmt::layer())
         .init();
+
+    let _ = get_config();
 
     let db = create_db(CONFIG.database_url.clone()).await;
     sqlx::migrate!("../migrations").run(&*db).await?;

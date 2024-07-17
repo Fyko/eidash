@@ -3,7 +3,6 @@ use axum::routing::any;
 use axum::{Json, Router};
 use http::StatusCode;
 
-use crate::auth::AuthSession;
 use crate::state::AppState;
 use crate::Result;
 
@@ -22,12 +21,7 @@ struct StatusResponse {
 
 #[tracing::instrument(skip_all)]
 #[axum::debug_handler]
-async fn status(
-    auth_session: AuthSession,
-    State(_state): State<AppState>,
-) -> Result<Json<StatusResponse>> {
-    tracing::info!("auth_session: {:#?}", auth_session.user);
-
+async fn status() -> Result<Json<StatusResponse>> {
     Ok(Json(StatusResponse {
         status: "Hello, world!".into(),
     }))

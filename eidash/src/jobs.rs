@@ -12,7 +12,7 @@ use crate::{
 };
 
 pub async fn start(state: AppState) {
-    tracing::info!("Starting clokwerk");
+    tracing::info!("Starting jobs");
 
     let mut scheduler = AsyncScheduler::new();
 

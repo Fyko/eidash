@@ -64,22 +64,23 @@ impl Display for ArtifactBonus {
     }
 }
 
+/// Calculates the Earnings Bonus for a user given their soul eggs, prophecy eggs, and epic
+/// research levels.
+///
+/// Optionally provide the bonus from artifact sets.
 pub fn calculate_earnings_bonus(
     data: &EarningsBonusData,
     artifact_bonus: Option<&mut ArtifactBonus>,
 ) -> f64 {
-    let mut soul_egg_bonus = 0.1 + ((data.er_soul_food_level as f64) * 0.01);
-    // + artifact_bonus.as_ref().map_or(0.0, |b| b.soul_egg_bonus);
+    let soul_egg_bonus = 0.1
+        + ((data.er_soul_food_level as f64) * 0.01)
+        + artifact_bonus.as_ref().map_or(0.0, |b| b.soul_egg_bonus);
 
-    let mut prophecy_egg_bonus = 0.05 + ((data.er_prophecy_bonus_level as f64) * 0.01);
-    // + artifact_bonus
-    //     .as_ref()
-    //     .map_or(0.0, |b| b.prophecy_egg_bonus);
-
-    if let Some(ab) = artifact_bonus {
-        soul_egg_bonus += ab.soul_egg_bonus;
-        prophecy_egg_bonus += ab.prophecy_egg_bonus;
-    }
+    let prophecy_egg_bonus = 0.05
+        + ((data.er_prophecy_bonus_level as f64) * 0.01)
+        + artifact_bonus
+            .as_ref()
+            .map_or(0.0, |b| b.prophecy_egg_bonus);
 
     (data.soul_eggs * soul_egg_bonus)
         * (1.0 + prophecy_egg_bonus).powf(data.eggs_of_prophecy as f64)
