@@ -40,6 +40,11 @@ pub async fn collect_backup(db: &PgPool, user: &UserEntity, backup: &Backup) -> 
     );
 
     let best_clothed_eb = deterministic_clothed_eb(backup);
+    let prestige_count = backup
+        .stats
+        .as_ref()
+        .map(|s| s.num_prestiges() as i32)
+        .unwrap_or(0);
 
     if sqlx::query!(
         r#"
@@ -51,10 +56,11 @@ pub async fn collect_backup(db: &PgPool, user: &UserEntity, backup: &Backup) -> 
 				er_prophecy_bonus_level,
 				er_soul_food_level,
 				clothed_earnings_bonus,
+                prestige_count,
 				time,
 				backup_time
 			)
-			values ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+			values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
 		"#,
         user.user_id.to_string(),
         computed_earnings_bonus,
@@ -63,6 +69,7 @@ pub async fn collect_backup(db: &PgPool, user: &UserEntity, backup: &Backup) -> 
         er_prophecy_bonus_level,
         er_soul_food_level,
         best_clothed_eb,
+        Some(prestige_count),
         OffsetDateTime::now_utc(),
         backup_time,
     )
