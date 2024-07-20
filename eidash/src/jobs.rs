@@ -6,7 +6,7 @@ use futures_util::TryStreamExt;
 use tokio::{sync::Semaphore, time::sleep};
 
 use crate::{
-    db::user::UserEntity,
+    db::{account::AccountEntity, user::UserEntity},
     ei::{collect_backup::collect_backup, first_contact},
     state::AppState,
 };
@@ -38,24 +38,24 @@ pub async fn start(state: AppState) {
 }
 
 async fn fetch_saves(state: &AppState) -> Result<()> {
-    let mut users = sqlx::query_as!(
-        UserEntity,
-        r#"select * from "user" where ei_id is not null"#
+    let mut accounts = sqlx::query_as!(
+        AccountEntity,
+        r#"select * from account where game_id is not null"#
     )
     .fetch(&*state.db);
 
     // limit to 10 users at a time
     let sempahore = Arc::new(Semaphore::new(10));
-    while let Some(user) = users.try_next().await? {
+    while let Some(account) = accounts.try_next().await? {
         tokio::spawn({
             let state = state.clone();
             let semaphore_clone = sempahore.clone();
             async move {
                 let permit = semaphore_clone.acquire().await.unwrap();
-                let user_id = user.user_id.to_string();
+                let user_id = account.user_id.to_string();
 
                 tracing::debug!(user = user_id, "fetching save");
-                let save = match first_contact(user.ei_id.as_ref().expect("infallible")).await {
+                let save = match first_contact(&account.game_id).await {
                     Ok(save) => save,
                     Err(e) => {
                         tracing::error!(user = user_id, "failed to fetch save {e:#?}");
@@ -69,7 +69,7 @@ async fn fetch_saves(state: &AppState) -> Result<()> {
                     return;
                 };
 
-                match collect_backup(&state.db, &user, &backup).await {
+                match collect_backup(&state.db, &account, &backup).await {
                     Ok(_) => {}
                     Err(e) => {
                         tracing::error!(user = user_id, "failed to collect backup {e:#?}");

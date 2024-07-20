@@ -6,6 +6,7 @@ use sqlx::{ConnectOptions, PgPool};
 
 pub mod types;
 
+pub mod account;
 pub mod basic_save_v1;
 pub mod user;
 

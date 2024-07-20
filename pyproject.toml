@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "scripts"
+version = "0.1.0"
+description = ""
+authors = ["Carter Himmel <me@fyko.net>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+psycopg2-binary = "^2.9.9"
+
+[tool.poetry.scripts]
+migrate-alt-accounts = "scripts.migrate-alt-accounts:run"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

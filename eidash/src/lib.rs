@@ -23,10 +23,12 @@ use tower_http::compression::CompressionLayer;
 use tower_http::cors::CorsLayer;
 use tower_http::trace::TraceLayer;
 use tower_sessions::cookie::SameSite;
-use tower_sessions::fred::clients::RedisClient;
-use tower_sessions::fred::interfaces::ClientLike;
-use tower_sessions::fred::types::{PerformanceConfig, ReconnectPolicy, RedisConfig};
-use tower_sessions::{CachingSessionStore, Expiry, MokaStore, RedisStore, SessionManagerLayer};
+use tower_sessions::{CachingSessionStore, Expiry, SessionManagerLayer};
+use tower_sessions_moka_store::MokaStore;
+use tower_sessions_redis_store::fred::clients::RedisPool;
+use tower_sessions_redis_store::fred::interfaces::ClientLike;
+use tower_sessions_redis_store::fred::types::RedisConfig;
+use tower_sessions_redis_store::RedisStore;
 
 pub type Result<T, E = Error> = anyhow::Result<T, E>;
 
@@ -42,20 +44,16 @@ pub mod routes;
 pub mod state;
 
 pub async fn create_session_layer(
-) -> anyhow::Result<SessionManagerLayer<CachingSessionStore<MokaStore, RedisStore>>> {
+) -> anyhow::Result<SessionManagerLayer<CachingSessionStore<MokaStore, RedisStore<RedisPool>>>> {
     let config = RedisConfig::from_url(&CONFIG.redis_url)?;
-    let perf = PerformanceConfig::default();
-    let policy = ReconnectPolicy::default();
-    let client = RedisClient::new(config, Some(perf), None, Some(policy));
+    let redis_pool = RedisPool::new(config, None, None, None, 6)?;
 
-    let redis_conn = client.connect();
-    tokio::spawn(async move {
-        redis_conn.await.unwrap().expect("redis died");
-    });
-    client.wait_for_connect().await?;
+    let redis_conn = redis_pool.connect();
+    tokio::spawn(async move { redis_conn.await.unwrap().expect("redis died") });
+    redis_pool.wait_for_connect().await?;
 
     let moka_store = MokaStore::new(Some(1000));
-    let redis_store = RedisStore::new(client);
+    let redis_store = RedisStore::new(redis_pool);
     let caching_store = CachingSessionStore::new(moka_store, redis_store);
     let session_expiry = Expiry::OnInactivity(time::Duration::days(21));
 
@@ -76,9 +74,9 @@ pub async fn create_router(state: AppState) -> anyhow::Result<Router<()>> {
     // auth layer
     let auth_backend = OidcBackend::new(state.clone(), CONFIG.oidc_scopes.clone()).await?;
     let auth_service = ServiceBuilder::new()
-        .layer(HandleErrorLayer::new(|_: BoxError| async {
-            StatusCode::BAD_REQUEST
-        }))
+        // .layer(HandleErrorLayer::new(|_: BoxError| async {
+        //     StatusCode::BAD_REQUEST
+        // }))
         .layer(AuthManagerLayerBuilder::new(auth_backend, session_layer).build());
 
     let trace_layer = TraceLayer::new_for_http();
@@ -93,26 +91,9 @@ pub async fn create_router(state: AppState) -> anyhow::Result<Router<()>> {
         }))
         .layer(TimeoutLayer::new(Duration::from_secs(10)));
 
-    // let origins = CONFIG
-    //     .cors_allowed_origins
-    //     .iter()
-    //     .map(|origin| {
-    //         origin
-    //             .parse::<HeaderValue>()
-    //             .expect("invalid cors_allowed_origins")
-    //     })
-    //     .collect::<Vec<HeaderValue>>();
-    // tracing::debug!("allowed origins: {origins:#?}");
-
-    // let cors_layer = CorsLayer::new()
-    //     .allow_methods([Method::GET, Method::POST, Method::PUT])
-    //     .allow_headers([ACCEPT, ACCEPT_ENCODING, AUTHORIZATION, CONTENT_TYPE, COOKIE])
-    //     .allow_origin(origins)
-    //     .allow_credentials(true)
-    //     .allow_headers([CONTENT_TYPE]);
     let cors_layer = CorsLayer::very_permissive();
 
-    let middleware = ServiceBuilder::new()
+    let router = routes(state)
         .layer(request_id::layer())
         .layer(trace_layer)
         .layer(cors_layer)
@@ -121,7 +102,7 @@ pub async fn create_router(state: AppState) -> anyhow::Result<Router<()>> {
         .layer(CompressionLayer::new().gzip(true).br(true))
         .layer(timeout_layer);
 
-    Ok(routes(state).layer(middleware))
+    Ok(router)
 }
 
 fn routes(state: AppState) -> Router<()> {

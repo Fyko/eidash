@@ -23,3 +23,9 @@ create_regex!(USER_ID_REGEX, "user");
 pub struct GameMarker;
 pub type GameId = Pksuid<GameMarker>;
 create_regex!(GAME_ID_REGEX, "game");
+
+#[derive(Debug)]
+#[non_exhaustive]
+pub struct AccountMarker;
+pub type AccountId = Pksuid<AccountMarker>;
+create_regex!(ACCOUNT_ID_REGEX, "acct");

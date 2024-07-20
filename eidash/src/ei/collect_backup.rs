@@ -3,16 +3,23 @@ use num_bigint::BigInt;
 use sqlx::{types::BigDecimal, PgPool};
 use time::OffsetDateTime;
 
-use crate::db::user::UserEntity;
+use crate::db::account::AccountEntity;
 
 use super::{
     calculate_clothed::deterministic_clothed_eb, calculate_earnings_bonus, get_epic_research_level,
     EarningsBonusData,
 };
 
-pub async fn collect_backup(db: &PgPool, user: &UserEntity, backup: &Backup) -> anyhow::Result<()> {
+pub async fn collect_backup(
+    db: &PgPool,
+    account: &AccountEntity,
+    backup: &Backup,
+) -> anyhow::Result<()> {
     let Some(ref game) = backup.game else {
-        return Err(anyhow::anyhow!("No game found for user {}", user.user_id));
+        return Err(anyhow::anyhow!(
+            "No game found for account {}",
+            account.account_id
+        ));
     };
 
     let Some(Ok(backup_time)) = backup
@@ -48,7 +55,7 @@ pub async fn collect_backup(db: &PgPool, user: &UserEntity, backup: &Backup) -> 
     if sqlx::query!(
         r#"
 			insert into basic_save_v1 (
-				user_id,
+				account_id,
 				computed_earnings_bonus,
 				soul_eggs,
 				eggs_of_prophecy,
@@ -61,7 +68,7 @@ pub async fn collect_backup(db: &PgPool, user: &UserEntity, backup: &Backup) -> 
 			)
 			values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
 		"#,
-        user.user_id.to_string(),
+        account.account_id.to_string(),
         computed_earnings_bonus,
         BigDecimal::from(BigInt::from(soul_eggs)),
         eggs_of_prophecy,

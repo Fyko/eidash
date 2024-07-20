@@ -5,6 +5,7 @@ use axum_core::response::{IntoResponse, Response};
 use eidash_id::markers::UserId;
 
 use crate::auth::AuthSession;
+use crate::db::account;
 use crate::db::user::{get_by_user_id, UserEntity};
 use crate::ei::collect_backup::collect_backup;
 use crate::ei::first_contact;
@@ -43,14 +44,16 @@ async fn get_user(
         user_id
     };
 
-    let Some(user) = get_by_user_id(&state.db, user_id).await? else {
+    let Some(user) = get_by_user_id(&state.db, &user_id).await? else {
         return Err(Error::NotFound);
     };
 
+    let accounts = account::get_many_by_user_id(&state.db, user_id).await?;
+
     let user = if querying_self {
-        APIUser::from_row(user)
+        APIUser::from_row_with_accounts(user, accounts)
     } else {
-        APIUser::private(user)
+        APIUser::private_from_row_with_accounts(user, accounts)
     };
 
     Ok(Json(user).into_response())
