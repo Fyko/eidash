@@ -52,27 +52,44 @@ async fn fetch_saves(state: &AppState) -> Result<()> {
             let semaphore_clone = sempahore.clone();
             async move {
                 let permit = semaphore_clone.acquire().await.unwrap();
-                let user_id = account.user_id.to_string();
+                let account_id = account.account_id.to_string();
 
-                tracing::debug!(user = user_id, "fetching save");
+                tracing::debug!(account = account_id, "fetching save");
                 let save = match first_contact(&account.game_id).await {
                     Ok(save) => save,
                     Err(e) => {
-                        tracing::error!(user = user_id, "failed to fetch save {e:#?}");
+                        tracing::error!(account = account_id, "failed to fetch save {e:#?}");
                         return;
                     }
                 };
                 drop(permit);
 
                 let Some(backup) = save.backup else {
-                    tracing::error!(user = user_id, "no backup found");
+                    tracing::error!(account = account_id, "no backup found");
                     return;
                 };
+
+                // if username is different, update the account record
+                if account.game_username != backup.user_name() {
+                    if let Err(e) = sqlx::query!(
+                        "update account set game_username = $1 where account_id = $2",
+                        backup.user_name(),
+                        account.account_id.to_string(),
+                    )
+                    .execute(&*state.db)
+                    .await
+                    {
+                        tracing::error!(
+                            account = account_id,
+                            "failed to update account username {e:#?}"
+                        );
+                    }
+                }
 
                 match collect_backup(&state.db, &account, &backup).await {
                     Ok(_) => {}
                     Err(e) => {
-                        tracing::error!(user = user_id, "failed to collect backup {e:#?}");
+                        tracing::error!(account = account_id, "failed to collect backup {e:#?}");
                     }
                 }
             }

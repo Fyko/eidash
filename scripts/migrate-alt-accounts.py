@@ -13,8 +13,9 @@ def run():
 			with conn.cursor() as insert:
 				for row in cur:
 					insert.execute("""
-						insert into account (user_id, game_id, account_visibility)
-						values (%s, %s, %s)
+						insert into account (user_id, game_id, account_visibility, position)
+						values (%s, %s, %s, 0)
+					    returning account_id
 					""", (row[0], row[1], row[2]))
 					i += 1
 		except (Exception, psycopg2.DatabaseError) as error:

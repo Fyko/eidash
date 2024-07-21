@@ -1,6 +1,6 @@
 "use client";
 
-import { APIUser } from "@/actions/user";
+import { APIUser } from "@/lib/types";
 import { Check, Copy } from "@phosphor-icons/react";
 import { useState } from "react";
 

@@ -1,15 +1,7 @@
+import { APIBasicSaveV1, APIUser, BasicSave } from "@/lib/types";
 import { cookies } from "next/headers";
 
 const API_BASE = process.env.API_BASE;
-
-export interface APIUser {
-  id: string;
-  ei_id?: string;
-  profile_visibility: "private" | "public";
-  username: string;
-  email?: string;
-  created_at: string;
-}
 
 export async function fetchUser(id: string): Promise<APIUser | null> {
   const jar = cookies();
@@ -22,24 +14,13 @@ export async function fetchUser(id: string): Promise<APIUser | null> {
   return res.ok ? res.json() : null;
 }
 
-export interface BasicSaveV1Row {
-  user_id: string;
-  computed_earnings_bonus: number;
-  soul_eggs: number;
-  eggs_of_prophecy: number;
-  er_soul_food_level: number;
-  er_prophecy_bonus_level: number;
-  timestamp: string;
-  backup_time: string;
-}
-
 export async function fetchSaves(
-  id: string,
+  accountId: string,
   limit?: number
-): Promise<BasicSaveV1Row[]> {
+): Promise<BasicSave[]> {
   const jar = cookies();
 
-  const url = new URL(`${API_BASE}/api/users/${id}/basic-save-v1`);
+  const url = new URL(`${API_BASE}/api/accounts/${accountId}/basic-save-v1`);
   if (limit) {
     url.searchParams.set("limit", limit.toString());
   }
@@ -50,5 +31,18 @@ export async function fetchSaves(
     },
   });
 
-  return res.json();
+  const data = (await res.json()) as APIBasicSaveV1[];
+  return data.map((row) => ({
+    account_id: row.account_id,
+    computed_earnings_bonus: row.computed_earnings_bonus,
+    eggs_of_prophecy: row.eggs_of_prophecy,
+    er_soul_food_level: row.er_soul_food_level,
+    er_prophecy_bonus_level: row.er_prophecy_bonus_level,
+    clothed_earnings_bonus: row.clothed_earnings_bonus,
+
+    // custom
+    soul_eggs: parseFloat(row.soul_eggs),
+    timestamp: new Date(row.time),
+    backup_time: new Date(row.backup_time),
+  }));
 }

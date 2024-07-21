@@ -2,10 +2,11 @@
 
 import { Time } from "lightweight-charts";
 import { Chart } from "./Chart";
-import { BasicSave } from "@/hooks/useSaves";
 import { formatEIValue } from "@/lib/units";
+import { BasicSave } from "@/lib/types";
 
 export default function SoulEggsChart({ saves }: { saves: BasicSave[] }) {
+  console.log(saves[0]);
   return (
     <Chart
       data={saves.map((row) => ({

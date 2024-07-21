@@ -1,18 +1,15 @@
 use axum::extract::{Path, State};
-use axum::routing::{delete, get, post};
+use axum::routing::{delete, post};
 use axum::{Json, Router};
 use axum_core::response::{IntoResponse, Response};
-use eidash_id::markers::UserId;
 use http::StatusCode;
 
 use crate::auth::AuthSession;
-use crate::db::account::{self, AccountEntity};
-use crate::db::user::{get_by_user_id, UserEntity};
+use crate::db::account::AccountEntity;
 use crate::ei::collect_backup::collect_backup;
 use crate::ei::first_contact;
 use crate::error::{AxumResult, Error};
 use crate::models::api_account::APIAccount;
-use crate::models::api_user::APIUser;
 use crate::state::AppState;
 
 pub fn router() -> Router<AppState> {
@@ -103,33 +100,44 @@ async fn create_account(
 async fn toggle_visibility(
     auth_session: AuthSession,
     State(state): State<AppState>,
+    Path(account_id): Path<String>,
 ) -> AxumResult<Response> {
     let Some(auth_user) = auth_session.user else {
         return Err(Error::Unauthorized);
     };
     let user_id = auth_user.user_id;
 
-    let new_visibility = match auth_user.profile_visibility.as_str() {
+    let Some(account) = sqlx::query_as!(
+        AccountEntity,
+        r#"select * from account where account_id = $1"#,
+        account_id.to_string(),
+    )
+    .fetch_optional(&*state.db)
+    .await?
+    else {
+        return Err(Error::NotFound);
+    };
+
+    if account.user_id != user_id {
+        return Err(Error::Unauthorized);
+    }
+
+    let new_visibility = match account.account_visibility.as_str() {
         "public" => "private",
         "private" => "public",
         _ => return Err(Error::BadRequest("invalid profile_visibility".to_string())),
     };
 
-    let user = sqlx::query_as!(
-        UserEntity,
-        r#"update "user" set profile_visibility = $1 where user_id = $2 returning *"#,
+    let account = sqlx::query_as!(
+        AccountEntity,
+        r#"update account set account_visibility = $1 where account_id = $2 returning *"#,
         new_visibility,
-        user_id.to_string(),
+        account_id.to_string(),
     )
     .fetch_one(&*state.db)
     .await?;
 
-    Ok(Json(APIUser::from_row(user)).into_response())
-}
-
-#[derive(serde::Deserialize)]
-struct DeleteAccount {
-    account_id: String,
+    Ok(Json(APIAccount::from_row(account)).into_response())
 }
 
 #[tracing::instrument(skip_all)]

@@ -1,22 +1,23 @@
 "use client";
 
-import { useAuth } from "@/hooks/useAuth";
+import { APIAccount } from "@/lib/types";
 import { useTransition } from "react";
 
-export default function ProfileVisibilityButton() {
-  const auth = useAuth();
+export default function AccountVisibilityButton({
+  account,
+}: {
+  account: APIAccount;
+}) {
   const [isPending, startTransition] = useTransition();
 
   const submitAction = () => {
     startTransition(async () => {
-      await fetch("/api/users/@me/toggle_visibility", {
+      await fetch("/api/accounts/${account.id}/toggle_visibility", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
       });
-
-      await auth.updateUser();
     });
   };
 
@@ -26,8 +27,7 @@ export default function ProfileVisibilityButton() {
       disabled={isPending}
       onClick={submitAction}
     >
-      Switch to{" "}
-      {auth.user?.profile_visibility === "private" ? "public" : "private"}
+      Switch to {account?.visibility === "private" ? "public" : "private"}
     </button>
   );
 }

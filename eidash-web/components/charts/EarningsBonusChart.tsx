@@ -3,7 +3,7 @@
 import { LineStyle, PriceLineOptions, Time } from "lightweight-charts";
 import { Chart } from "./Chart";
 import { farmerRoles, formatEIValue } from "@/lib/units";
-import { BasicSave } from "@/hooks/useSaves";
+import { BasicSave } from "@/lib/types";
 
 export default function EarningsBonusChart({ saves }: { saves: BasicSave[] }) {
   return (

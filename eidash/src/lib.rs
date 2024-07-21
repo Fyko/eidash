@@ -107,6 +107,7 @@ pub async fn create_router(state: AppState) -> anyhow::Result<Router<()>> {
 
 fn routes(state: AppState) -> Router<()> {
     let routers = vec![
+        routes::accounts::router,
         routes::oidc::router,
         routes::saves::router,
         routes::status::router,

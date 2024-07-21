@@ -2,8 +2,7 @@
 
 import { Time } from "lightweight-charts";
 import { Chart } from "./Chart";
-import { BasicSave } from "@/hooks/useSaves";
-import { formatEIValue } from "@/lib/units";
+import { BasicSave } from "@/lib/types";
 import { calculateMer } from "@/lib/math";
 
 export default function MerChart({ saves }: { saves: BasicSave[] }) {
