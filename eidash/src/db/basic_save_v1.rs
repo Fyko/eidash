@@ -5,7 +5,7 @@ use super::types::Timestamptz;
 
 #[derive(Debug, Clone, FromRow)]
 pub struct BasicSaveV1Entity {
-    pub user_id: String,
+    pub account_id: String,
     pub computed_earnings_bonus: f64,
     pub soul_eggs: BigDecimal,
     pub eggs_of_prophecy: i32,
@@ -23,7 +23,7 @@ pub async fn write_backup(_db: &PgPool, _game: Game) -> anyhow::Result<()> {
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct APIBasicSaveV1 {
-    pub user_id: String,
+    pub account_id: String,
     pub computed_earnings_bonus: f64,
     pub soul_eggs: String,
     pub eggs_of_prophecy: i32,
@@ -38,7 +38,7 @@ pub struct APIBasicSaveV1 {
 impl From<BasicSaveV1Entity> for APIBasicSaveV1 {
     fn from(entity: BasicSaveV1Entity) -> Self {
         Self {
-            user_id: entity.user_id,
+            account_id: entity.account_id,
             computed_earnings_bonus: entity.computed_earnings_bonus,
             soul_eggs: entity.soul_eggs.to_string(),
             eggs_of_prophecy: entity.eggs_of_prophecy,

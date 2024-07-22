@@ -1,20 +1,12 @@
 "use client";
 
+import { APIUser } from "@/lib/types";
 import { createContext, useContext, useEffect, useState } from "react";
 
 const AuthContext = createContext<ReturnType<typeof useProvideAuth>>({
   user: undefined,
   updateUser: async () => {},
 });
-
-export interface APIUser {
-  id: string;
-  ei_id?: string;
-  profile_visibility: "private" | "public";
-  username: string;
-  email?: string;
-  created_at: string;
-}
 
 export function AuthenticationProvider({
   children,

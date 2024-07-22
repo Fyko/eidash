@@ -73,7 +73,7 @@ pub async fn create_oidc_client(
     client_id: String,
     client_secret: Option<String>,
     redirect_url: String,
-) -> Result<OidcClient<EmptyAdditionalClaims>, OidcError> {
+) -> anyhow::Result<OidcClient<EmptyAdditionalClaims>> {
     let provider_metadata =
         CoreProviderMetadata::discover_async(IssuerUrl::new(issuer)?, async_http_client).await?;
 
@@ -148,7 +148,6 @@ impl AuthnBackend for OidcBackend {
             .state
             .oidc_client
             .exchange_code(AuthorizationCode::new(code))
-            // Set the PKCE code verifier.
             .set_pkce_verifier(PkceCodeVerifier::new(auth_state.pkce_verifier))
             .request_async(async_http_client)
             .await?;

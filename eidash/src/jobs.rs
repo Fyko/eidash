@@ -6,7 +6,7 @@ use futures_util::TryStreamExt;
 use tokio::{sync::Semaphore, time::sleep};
 
 use crate::{
-    db::user::UserEntity,
+    db::account::AccountEntity,
     ei::{collect_backup::collect_backup, first_contact},
     state::AppState,
 };
@@ -38,41 +38,58 @@ pub async fn start(state: AppState) {
 }
 
 async fn fetch_saves(state: &AppState) -> Result<()> {
-    let mut users = sqlx::query_as!(
-        UserEntity,
-        r#"select * from "user" where ei_id is not null"#
+    let mut accounts = sqlx::query_as!(
+        AccountEntity,
+        r#"select * from account where game_id is not null"#
     )
     .fetch(&*state.db);
 
     // limit to 10 users at a time
     let sempahore = Arc::new(Semaphore::new(10));
-    while let Some(user) = users.try_next().await? {
+    while let Some(account) = accounts.try_next().await? {
         tokio::spawn({
             let state = state.clone();
             let semaphore_clone = sempahore.clone();
             async move {
                 let permit = semaphore_clone.acquire().await.unwrap();
-                let user_id = user.user_id.to_string();
+                let account_id = account.account_id.to_string();
 
-                tracing::debug!(user = user_id, "fetching save");
-                let save = match first_contact(user.ei_id.as_ref().expect("infallible")).await {
+                tracing::debug!(account = account_id, "fetching save");
+                let save = match first_contact(&account.game_id).await {
                     Ok(save) => save,
                     Err(e) => {
-                        tracing::error!(user = user_id, "failed to fetch save {e:#?}");
+                        tracing::error!(account = account_id, "failed to fetch save {e:#?}");
                         return;
                     }
                 };
                 drop(permit);
 
                 let Some(backup) = save.backup else {
-                    tracing::error!(user = user_id, "no backup found");
+                    tracing::error!(account = account_id, "no backup found");
                     return;
                 };
 
-                match collect_backup(&state.db, &user, &backup).await {
+                // if username is different, update the account record
+                if account.game_username != backup.user_name() {
+                    if let Err(e) = sqlx::query!(
+                        "update account set game_username = $1 where account_id = $2",
+                        backup.user_name(),
+                        account.account_id.to_string(),
+                    )
+                    .execute(&*state.db)
+                    .await
+                    {
+                        tracing::error!(
+                            account = account_id,
+                            "failed to update account username {e:#?}"
+                        );
+                    }
+                }
+
+                match collect_backup(&state.db, &account, &backup).await {
                     Ok(_) => {}
                     Err(e) => {
-                        tracing::error!(user = user_id, "failed to collect backup {e:#?}");
+                        tracing::error!(account = account_id, "failed to collect backup {e:#?}");
                     }
                 }
             }

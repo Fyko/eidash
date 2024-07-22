@@ -27,7 +27,7 @@ pub struct UserEntity {
 #[tracing::instrument(skip(pool))]
 pub async fn get_by_user_id(
     pool: &PgPool,
-    user_id: UserId,
+    user_id: &UserId,
 ) -> Result<Option<UserEntity>, sqlx::Error> {
     let user = sqlx::query_as!(
         UserEntity,

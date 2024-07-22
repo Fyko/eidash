@@ -1,3 +1,5 @@
+"use client";
+
 import { useEffect, useState, useRef } from "react";
 import { formatDistance } from "date-fns";
 
@@ -27,8 +29,8 @@ export const LastUpdated: React.FC<LastUpdatedProps> = ({ timestamp }) => {
   };
 
   return (
-    <p>
+    <pre>
       Last updated <span className="italic">{getLastUpdatedText()}</span>
-    </p>
+    </pre>
   );
 };

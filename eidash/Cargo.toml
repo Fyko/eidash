@@ -1,13 +1,45 @@
 [package]
+edition = "2021"
 name = "eidash"
 version = "0.1.0"
-edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-sqlx.workspace = true
+anyhow = "1.0.75"
+async-trait = "0.1.74"
+axum = { version = "0.7.5", features = ["tracing", "macros", "http2", "ws"] }
+axum-core = "0.4.1"
+axum-login = "0.15.3"
+bigdecimal = { version = "0.4.5", features = ["serde"] }
+clokwerk = "0.4"
+dotenvy = "0.15.7"
+ei-proto.workspace = true
 eidash-id.workspace = true
+envy = "0.4"
+futures-util = "0.3.29"
+http = "1.0.0"
+hyper = { version = "1.0.1", features = ["server"] }
+hyper-util = { version = "0.1.1", features = ["tokio"] }
+num-bigint = { version = "0.4.5", features = ["serde"] }
+oauth2 = "4.4.2"
+once_cell.workspace = true
+openidconnect = "3.4.0"
+pika = "0.1.3"
+rand = "0.8.5"
+regex = "1.10.2"
+reqwest = { version = "0.11", features = [
+  "multipart",
+  "rustls-tls-webpki-roots",
+] }
+rustflake = "0.1.1"
+secrecy = { version = "0.8.0", features = ["serde"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+sqlx.workspace = true
+svix-ksuid = { version = "0.8.0", features = ["serde"] }
+thiserror = "1.0.50"
+time = "0.3.30"
 tokio = { version = "1", features = [
   "macros",
   "rt-multi-thread",
@@ -16,19 +48,7 @@ tokio = { version = "1", features = [
   "sync",
   "signal",
 ] }
-serde = { version = "1", features = ["derive"] }
-serde_json = "1"
-tracing = "0.1"
-tracing-subscriber = { version = "0.3", features = [
-  "fmt",
-  "env-filter",
-  "json",
-] }
-clokwerk = "0.4"
-envy = "0.4"
-once_cell.workspace = true
-axum = { version = "0.7.5", features = ["tracing", "macros", "http2", "ws"] }
-anyhow = "1.0.75"
+tower = { version = "0.4.13", features = ["tracing", "timeout"] }
 tower-http = { version = "0.5.0", features = [
   "tracing",
   "trace",
@@ -36,33 +56,18 @@ tower-http = { version = "0.5.0", features = [
   "compression-full",
   "cors",
 ] }
-tower = { version = "0.4.13", features = ["tracing", "timeout"] }
-http = "1.0.0"
-thiserror = "1.0.50"
-ei-proto.workspace = true
-dotenvy = "0.15.7"
-uuid = { version = "1.5.0", features = ["v1", "v4", "fast-rng", "serde"] }
-time = "0.3.30"
-reqwest = { version = "0.11.22", features = [
-  "multipart",
-  "rustls-tls-webpki-roots",
-] }
-tower-sessions = { version = "0.7.0", features = ["redis-store", "moka-store"] }
-hyper-util = { version = "0.1.1", features = ["tokio"] }
-hyper = { version = "1.0.1", features = ["server"] }
-openidconnect = "3.4.0"
-axum-core = "0.4.1"
-futures-util = "0.3.29"
 tower-layer = "0.3.2"
 tower-service = "0.3.2"
-async-trait = "0.1.74"
-axum-login = "0.10.2"
-secrecy = { version = "0.8.0", features = ["serde"] }
-pika = "0.1.3"
-rustflake = "0.1.1"
-rand = "0.8.5"
+tower-sessions = "0.12.2"
+tower-sessions-moka-store = "0.13.0"
+tower-sessions-redis-store = { version = "0.13.0", features = [
+  "enable-rustls",
+] }
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = [
+  "fmt",
+  "env-filter",
+  "json",
+] }
 ulid = "1.1.0"
-svix-ksuid = { version = "0.7.0", features = ["serde"] }
-regex = "1.10.2"
-bigdecimal = { version = "0.4.5", features = ["serde"] }
-num-bigint = { version = "0.4.5", features = ["serde"] }
+uuid = { version = "1.5.0", features = ["v1", "v4", "fast-rng", "serde"] }

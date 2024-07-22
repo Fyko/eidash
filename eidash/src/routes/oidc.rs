@@ -31,7 +31,10 @@ async fn callback(
     session: Session,
     Query(OidcQuery { code, state, .. }): Query<OidcQuery>,
 ) -> impl IntoResponse {
-    let Ok(Some(auth_state)) = session.get::<OidcLoginState>(AUTHENTICATION_STATE_KEY) else {
+    let Ok(Some(auth_state)) = session
+        .get::<OidcLoginState>(AUTHENTICATION_STATE_KEY)
+        .await
+    else {
         return (StatusCode::BAD_REQUEST, "No authentication state found.").into_response();
     };
 
@@ -51,12 +54,20 @@ async fn callback(
         return StatusCode::INTERNAL_SERVER_ERROR.into_response();
     }
 
-    let next = session
-        .remove::<String>(NEXT_URL_KEY)
-        .unwrap_or(Some("".to_string()))
-        .unwrap_or_default();
+    // let next = session
+    //     .remove::<String>(NEXT_URL_KEY)
+    //     .await
+    //     .unwrap_or(Some("".to_string()))
+    //     .unwrap_or_default();
+    // tracing::info!("next url: {next}");
 
-    Redirect::to(&format!("{}/{next}", CONFIG.frontend_url)).into_response()
+    // let redirect_url = if next.is_empty() {
+    // } else {
+    //     format!("{}/{next}", CONFIG.frontend_url)
+    // };
+    tracing::info!("redirecting to {:#?}.", CONFIG.frontend_url);
+
+    Redirect::to(&CONFIG.frontend_url.clone()).into_response()
 }
 
 #[derive(Debug, Deserialize)]
@@ -75,9 +86,11 @@ async fn login(
 
     session
         .insert(AUTHENTICATION_STATE_KEY, auth_state)
+        .await
         .unwrap();
     session
-        .insert(NEXT_URL_KEY, redirect_to.unwrap_or("/".to_string()))
+        .insert(NEXT_URL_KEY, redirect_to.unwrap_or("".to_string()))
+        .await
         .unwrap();
 
     Redirect::temporary(auth_url.as_str()).into_response()

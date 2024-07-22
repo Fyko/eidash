@@ -5,6 +5,7 @@ import { Roboto } from "next/font/google";
 import "./globals.css";
 import { AuthenticationProvider } from "@/hooks/useAuth";
 import PlausibleProvider from "next-plausible";
+import { AccountIdProvider } from "@/hooks/useAccountId";
 
 const roboto = Roboto({ weight: ["400", "700"], subsets: ["latin"] });
 
@@ -54,7 +55,9 @@ export default function RootLayout({
         />
       </head>
       <body className={roboto.className} style={{ overflow: "unset" }}>
-        <AuthenticationProvider>{children}</AuthenticationProvider>
+        <AuthenticationProvider>
+          <AccountIdProvider>{children}</AccountIdProvider>
+        </AuthenticationProvider>
       </body>
     </html>
   );

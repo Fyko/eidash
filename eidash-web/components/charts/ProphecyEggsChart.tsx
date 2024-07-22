@@ -2,7 +2,7 @@
 
 import { Time } from "lightweight-charts";
 import { Chart } from "./Chart";
-import { BasicSave } from "@/hooks/useSaves";
+import { BasicSave } from "@/lib/types";
 
 export default function ProphecyEggsChart({ saves }: { saves: BasicSave[] }) {
   return (

@@ -1,6 +1,7 @@
 use axum_core::response::IntoResponse;
 use http::StatusCode;
-use openidconnect::{core::CoreErrorResponseType, StandardErrorResponse};
+use oauth2::basic::BasicErrorResponseType;
+use openidconnect::StandardErrorResponse;
 use thiserror::Error;
 
 #[derive(Debug, Error)]
@@ -26,12 +27,16 @@ pub enum AuthenticateError {
     #[error("claims verification: {0:?}")]
     ClaimsVerification(#[from] openidconnect::ClaimsVerificationError),
 
+    // Result<
+    //    StandardTokenResponse<IdTokenFields<EmptyAdditionalClaims, EmptyExtraTokenFields, CoreGenderClaim, CoreJweContentEncryptionAlgorithm, CoreJwsSigningAlgorithm, CoreJsonWebKeyType>, BasicTokenType>,
+    //    RequestTokenError<Error<Error>, StandardErrorResponse<BasicErrorResponseType>>
+    // >,
     #[error("request token: {0:?}")]
     RequestToken(
         #[from]
         openidconnect::RequestTokenError<
             openidconnect::reqwest::Error<reqwest::Error>,
-            StandardErrorResponse<CoreErrorResponseType>,
+            StandardErrorResponse<BasicErrorResponseType>,
         >,
     ),
 
