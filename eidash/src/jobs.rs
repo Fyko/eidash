@@ -6,7 +6,7 @@ use futures_util::TryStreamExt;
 use tokio::{sync::Semaphore, time::sleep};
 
 use crate::{
-    db::{account::AccountEntity, user::UserEntity},
+    db::account::AccountEntity,
     ei::{collect_backup::collect_backup, first_contact},
     state::AppState,
 };

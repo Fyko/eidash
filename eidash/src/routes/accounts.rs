@@ -53,13 +53,14 @@ async fn create_account(
         .map_or("unknown", |bak| bak.user_name());
 
     // see if any accounts exist for this eid
-    if let Some(_) = sqlx::query_as!(
+    if sqlx::query_as!(
         AccountEntity,
         r#"select * from account where game_id = $1"#,
         eid,
     )
     .fetch_optional(&*state.db)
     .await?
+    .is_some()
     {
         // if it exists, throw a conflict
         return Ok((StatusCode::CONFLICT, "account already exists").into_response());
@@ -81,7 +82,7 @@ async fn create_account(
 		eid,
 		game_username,
 		count, // zero-based
-    )   
+    )
     .fetch_one(&*state.db)
     .await?;
 
@@ -110,7 +111,7 @@ async fn toggle_visibility(
     let Some(account) = sqlx::query_as!(
         AccountEntity,
         r#"select * from account where account_id = $1"#,
-        account_id.to_string(),
+        account_id,
     )
     .fetch_optional(&*state.db)
     .await?
@@ -132,7 +133,7 @@ async fn toggle_visibility(
         AccountEntity,
         r#"update account set account_visibility = $1 where account_id = $2 returning *"#,
         new_visibility,
-        account_id.to_string(),
+        account_id,
     )
     .fetch_one(&*state.db)
     .await?;
@@ -152,13 +153,14 @@ async fn delete_account(
     };
     let user_id = auth_user.user_id;
 
-    if let None = sqlx::query!(
+    if sqlx::query!(
         r#"select account_id from account where account_id = $1 and user_id = $2"#,
         account_id,
         user_id.to_string(),
     )
     .fetch_optional(&*state.db)
     .await?
+    .is_none()
     {
         return Err(Error::NotFound);
     };

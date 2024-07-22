@@ -1,7 +1,7 @@
 use axum_core::response::IntoResponse;
 use http::StatusCode;
 use oauth2::basic::BasicErrorResponseType;
-use openidconnect::{core::CoreErrorResponseType, StandardErrorResponse};
+use openidconnect::StandardErrorResponse;
 use thiserror::Error;
 
 #[derive(Debug, Error)]

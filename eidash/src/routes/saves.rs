@@ -2,13 +2,12 @@ use axum::extract::{Path, Query, State};
 use axum::routing::get;
 use axum::{Json, Router};
 use axum_core::response::{IntoResponse, Response};
-use eidash_id::markers::{AccountId, UserId};
+use eidash_id::markers::AccountId;
 use time::OffsetDateTime;
 
 use crate::auth::AuthSession;
 use crate::db::account::AccountEntity;
 use crate::db::basic_save_v1::{APIBasicSaveV1, BasicSaveV1Entity};
-use crate::db::user::get_by_user_id;
 use crate::error::{AxumResult, Error};
 use crate::state::AppState;
 

@@ -7,7 +7,7 @@ use axum_login::tower_sessions::Session;
 use http::StatusCode;
 
 use crate::auth::{AuthSession, Credentials, OidcLoginState, OidcQuery, AUTHENTICATION_STATE_KEY};
-use crate::config::{self, CONFIG};
+use crate::config::CONFIG;
 use crate::state::AppState;
 
 const NEXT_URL_KEY: &str = "auth.next-url";

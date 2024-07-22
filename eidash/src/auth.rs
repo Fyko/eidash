@@ -150,8 +150,7 @@ impl AuthnBackend for OidcBackend {
             .exchange_code(AuthorizationCode::new(code))
             .set_pkce_verifier(PkceCodeVerifier::new(auth_state.pkce_verifier))
             .request_async(async_http_client)
-            .await
-            .map_err(|e| AuthenticateError::RequestToken(e))?;
+            .await?;
 
         tracing::info!("token_response: {token_response:#?}");
 
