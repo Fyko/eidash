@@ -1,0 +1,64 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "select * from account where account_id = $1",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "account_id",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 1,
+        "name": "user_id",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 2,
+        "name": "game_username",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 3,
+        "name": "game_id",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 4,
+        "name": "account_visibility",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 5,
+        "name": "position",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 6,
+        "name": "created_at",
+        "type_info": "Timestamptz"
+      },
+      {
+        "ordinal": 7,
+        "name": "updated_at",
+        "type_info": "Timestamptz"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Text"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "a31192ddf9ad7271ef9f22c8cef356f41d9c7982eacc604c421433da3580810a"
+}
