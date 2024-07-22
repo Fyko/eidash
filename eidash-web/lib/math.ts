@@ -1,4 +1,4 @@
-import { BasicSave } from "@/hooks/useSaves";
+import { BasicSave } from "./types";
 
 // Trim trailing zeros, and possibly the decimal point.
 export function trimTrailingZeros(input: string) {
