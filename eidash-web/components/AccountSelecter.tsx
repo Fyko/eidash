@@ -40,7 +40,7 @@ export function AccountSelecter({
             {account.username}
           </option>
         ))}
-        <option value="addAccount">+ Account Account</option>
+        <option value="addAccount">+ Add Account</option>
       </select>
 
       <dialog ref={modalRef} className="modal" id="my_modal_2">
