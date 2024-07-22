@@ -35,6 +35,7 @@ export default function Charts({
       const storedAccountId = getLocalStorageNoPrefix("accountId");
       const accountId =
         storedAccountId ?? user?.accounts.find((a) => a.position === 0)?.id;
+      console.log({ accountId, storedAccountId });
       setAccount(user?.accounts.find((a) => a.id === accountId)!);
 
       if (!storedAccountId) {
@@ -57,7 +58,7 @@ export default function Charts({
             <></>
           )}
         </h2>
-        <AccountVisibilityButton account={account} />
+        {!userPage && <AccountVisibilityButton account={account} />}
       </div>
       <div className="space-y-4">
         {/* <div className="flex space-x-2">

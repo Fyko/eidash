@@ -15,6 +15,7 @@ import { AccountSelecter } from "@/components/AccountSelecter";
 import { APIUser } from "@/lib/types";
 import Charts from "@/components/Charts";
 import { useAuth } from "@/hooks/useAuth";
+import SetupAccount from "@/components/SetupAccount";
 
 export default async function Home() {
   const user = await fetchUser("@me");
@@ -45,7 +46,11 @@ export default async function Home() {
           </a>
         </div>
       </div>
-      <Charts user={user} />
+      {user?.accounts.length ? (
+        <Charts user={user} />
+      ) : (
+        <SetupAccount user={user} />
+      )}
     </div>
   );
 }

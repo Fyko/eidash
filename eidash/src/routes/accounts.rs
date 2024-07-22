@@ -81,7 +81,7 @@ async fn create_account(
 		eid,
 		game_username,
 		count, // zero-based
-    )
+    )   
     .fetch_one(&*state.db)
     .await?;
 
