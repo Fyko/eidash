@@ -1,13 +1,18 @@
 "use client";
 
 import { useAccountId } from "@/hooks/useAccountId";
-import { APIUser } from "@/lib/types";
+import { APIAccount, APIUser } from "@/lib/types";
 import { ChangeEventHandler, useRef, useState } from "react";
 import SetEIDForm from "./SetEIDForm";
 
-export function AccountSelecter({ user }: { user: APIUser }) {
+export function AccountSelecter({
+  user,
+  onChange,
+}: {
+  user: APIUser;
+  onChange: (account: APIAccount | null | undefined) => void;
+}) {
   const { accountId, setAccountId } = useAccountId();
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const modalRef = useRef<HTMLDialogElement>(null);
 
   const handleChange: ChangeEventHandler<HTMLSelectElement> = (
@@ -19,6 +24,7 @@ export function AccountSelecter({ user }: { user: APIUser }) {
       modalRef.current?.showModal();
     } else {
       setAccountId(e.target.value);
+      onChange(user.accounts.find((a) => a.id === e.target.value)!);
     }
   };
 

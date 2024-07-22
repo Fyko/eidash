@@ -1,5 +1,7 @@
-"use client";
+"use server";
 
+import { fetchSaves, fetchUser } from "@/actions/user";
+import Charts from "@/components/Charts";
 import EarningsBonusChart from "@/components/charts/EarningsBonusChart";
 import JerChart from "@/components/charts/JerChart";
 import MerChart from "@/components/charts/MerChart";
@@ -8,7 +10,9 @@ import SoulEggsChart from "@/components/charts/SoulEggsChart";
 import { LastUpdated } from "@/components/LastUpdated";
 import { useUser } from "@/hooks/useAuth";
 import { useClientSaves } from "@/hooks/useSaves";
+import { formatEIValue } from "@/lib/units";
 import { formatDistance } from "date-fns";
+import { Metadata } from "next";
 
 type Props = {
   params: {
@@ -16,12 +20,8 @@ type Props = {
   };
 };
 
-export default function UserProfile({ params: { id } }: Props) {
-  const user = useUser(id);
-  const saves = useClientSaves(id);
-
-  const latestSaveTimestamp =
-    saves.length > 1 ? saves[saves.length - 1].timestamp : null;
+export default async function UserProfile({ params: { id } }: Props) {
+  const user = await fetchUser(id);
 
   return user ? (
     <div className="mx-auto max-w-4xl px-5 py-10">
@@ -37,80 +37,53 @@ export default function UserProfile({ params: { id } }: Props) {
           </a>
         </div>
       </div>
-      <div className="mx-auto max-w-3xl space-y-12 md:py-24">
-        <div className="space-y-4">
-          <h2 className="text-4xl font-bold">
-            <pre className="inline-block">{user.username}</pre>&apos;s Profile
-          </h2>
-        </div>
-        <div className="space-y-4">
-          {latestSaveTimestamp ? (
-            <LastUpdated timestamp={latestSaveTimestamp} />
-          ) : (
-            <></>
-          )}
-          <h2 className="text-2xl font-bold">Earnings Bonus</h2>
-          <EarningsBonusChart saves={saves} />
-
-          <h2 className="text-2xl font-bold">Soul Eggs</h2>
-          <SoulEggsChart saves={saves} />
-
-          <h2 className="text-2xl font-bold">Prophecy Eggs</h2>
-          <ProphecyEggsChart saves={saves} />
-
-          <h2 className="text-2xl font-bold">MER Value</h2>
-          <MerChart saves={saves} />
-
-          <h2 className="text-2xl font-bold">JER Value</h2>
-          <JerChart saves={saves} />
-        </div>
-      </div>
+      <Charts user={user} userPage />
     </div>
   ) : (
     <p>Loading...</p>
   );
 }
 
-// export async function generateMetadata({
-//   params: { id },
-// }: Props): Promise<Metadata> {
-//   const user = await fetchUser(id);
-//   const [save] = await fetchSaves(id, 1)!;
+export async function generateMetadata({
+  params: { id },
+}: Props): Promise<Metadata> {
+  const user = await fetchUser(id)!;
+  const [save] = await fetchSaves(user!.accounts[0].id!, 1)!;
 
-//   const title = `EIDash - ${user!.username}'s Profile`;
-//   const description = `${user!.username} has ${formatEIValue(save.soul_eggs, {
-//     trim: true,
-//   })} Soul Eggs, ${Math.floor(
-//     save.eggs_of_prophecy
-//   )} Prophecy Eggs, and an Earnings Bonus of ${formatEIValue(
-//     save.computed_earnings_bonus,
-//     { trim: true }
-//   )}%!`;
+  const title = `EIDash - ${user!.username}'s Profile`;
+  const description = `${user!.username} has ${formatEIValue(save.soul_eggs, {
+    trim: true,
+  })} Soul Eggs, ${Math.floor(
+    save.eggs_of_prophecy
+  )} Prophecy Eggs, and an Earnings Bonus of ${formatEIValue(
+    save.computed_earnings_bonus,
+    { trim: true }
+  )}%!`;
 
-//   return {
-//     metadataBase: new URL(process.env.NEXT_PUBLIC_VERCEL_URL!),
-//     title,
-//     description,
-//     openGraph: {
-//       title,
-//       description,
-//       images: [
-//         {
-//           url: "/yeti.png",
-//         },
-//       ],
-//     },
-//     twitter: {
-//       card: "summary",
-//       site: "@fykowo",
-//       creator: "@fykowo",
-//       title,
-//       description,
-//       images: [
-//         {
-//           url: "/yeti.png",
-//         },
-//       ],
-//     },
-//   };
-// }
+  return {
+    metadataBase: new URL(process.env.NEXT_PUBLIC_VERCEL_URL!),
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      images: [
+        {
+          url: "/yeti.png",
+        },
+      ],
+    },
+    twitter: {
+      card: "summary",
+      site: "@fykowo",
+      creator: "@fykowo",
+      title,
+      description,
+      images: [
+        {
+          url: "/yeti.png",
+        },
+      ],
+    },
+  };
+}

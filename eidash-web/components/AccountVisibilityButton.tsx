@@ -6,13 +6,13 @@ import { useTransition } from "react";
 export default function AccountVisibilityButton({
   account,
 }: {
-  account: APIAccount;
+  account: APIAccount | null | undefined;
 }) {
   const [isPending, startTransition] = useTransition();
 
   const submitAction = () => {
     startTransition(async () => {
-      await fetch("/api/accounts/${account.id}/toggle_visibility", {
+      await fetch(`/api/accounts/${account?.id}/toggle_visibility`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

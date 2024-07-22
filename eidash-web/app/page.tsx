@@ -14,12 +14,10 @@ import { fetchSaves, fetchUser } from "@/actions/user";
 import { AccountSelecter } from "@/components/AccountSelecter";
 import { APIUser } from "@/lib/types";
 import Charts from "@/components/Charts";
+import { useAuth } from "@/hooks/useAuth";
 
 export default async function Home() {
-  const user = (await fetchUser("@me")) as APIUser;
-  // todo: use localstorage to persist the current accountId
-  const account = user?.accounts.find((a) => a.position === 0)!;
-  const saves = await fetchSaves(account.id);
+  const user = await fetchUser("@me");
 
   return (
     <div className="mx-auto max-w-4xl px-5 py-10">
@@ -47,7 +45,7 @@ export default async function Home() {
           </a>
         </div>
       </div>
-      <Charts user={user} account={account} saves={saves} />
+      <Charts user={user} />
     </div>
   );
 }

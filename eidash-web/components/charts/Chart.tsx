@@ -106,18 +106,18 @@ export const Chart = (props: ChartProps) => {
         timeFormatter: (time: number) => new Date(time * 1000).toLocaleString(),
       },
     });
-    chart.timeScale().applyOptions({ secondsVisible: true });
-    chart.timeScale().fitContent();
 
-    const newSeries = chart.addAreaSeries({
+    const series = chart.addAreaSeries({
       lineColor: lineColor ?? themeColors.DARK.LINE_LINE_COLOR,
       topColor: areaTopColor ?? themeColors.DARK.AREA_TOP_COLOR,
       bottomColor: areaBottomColor ?? themeColors.DARK.AREA_BOTTOM_COLOR,
     });
-    newSeries.setData(data);
+    series.setData(data);
     for (const priceLine of priceLines ?? []) {
-      newSeries.createPriceLine(priceLine);
+      series.createPriceLine(priceLine);
     }
+    chart.timeScale().applyOptions({ secondsVisible: true });
+    chart.timeScale().fitContent();
 
     window.addEventListener("resize", handleResize);
 

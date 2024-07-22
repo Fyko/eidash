@@ -11,16 +11,38 @@ import JerChart from "@/components/charts/JerChart";
 import { LastUpdated } from "@/components/LastUpdated";
 import { AccountSelecter } from "@/components/AccountSelecter";
 import { APIAccount, APIUser, BasicSave } from "@/lib/types";
+import { useClientSaves } from "@/hooks/useSaves";
+import {
+  getLocalStorageNoPrefix,
+  setLocalStorageNoPrefix,
+} from "@/lib/storage";
+import { useEffect, useState } from "react";
 
 export default function Charts({
   user,
-  account,
-  saves,
+  userPage = false,
 }: {
-  user: APIUser;
-  account: APIAccount;
-  saves: BasicSave[];
+  user: APIUser | null | undefined;
+  userPage?: boolean;
 }) {
+  const [account, setAccount] = useState<APIAccount | null | undefined>(null);
+  const saves = useClientSaves(account?.id);
+
+  useEffect(() => {
+    if (userPage) {
+      setAccount(user?.accounts.find((a) => a.position === 0));
+    } else {
+      const storedAccountId = getLocalStorageNoPrefix("accountId");
+      const accountId =
+        storedAccountId ?? user?.accounts.find((a) => a.position === 0)?.id;
+      setAccount(user?.accounts.find((a) => a.id === accountId)!);
+
+      if (!storedAccountId) {
+        setLocalStorageNoPrefix("accountId", accountId!);
+      }
+    }
+  }, [user?.accounts, userPage]);
+
   const latestSaveTimestamp =
     saves.length > 1 ? saves[saves.length - 1].timestamp : null;
 
@@ -28,24 +50,25 @@ export default function Charts({
     <div className="mx-auto max-w-3xl space-y-12 md:py-24">
       <div className="space-y-4">
         <h2 className="text-2xl font-bold">
-          <AccountSelecter user={user} />
+          <AccountSelecter user={user!} onChange={setAccount} />
           {account?.visibility === "public" && user ? (
             <CopyUserProfileURLButton user={user} />
           ) : (
             <></>
           )}
         </h2>
-        {/* <SetEIDForm />
-          <pre>
-            {(JSON.stringify(user, null, 4) ?? "").replace(
-              /(EI)(\d+)(\d{4})/g,
-              (_, prefix, inner, lastFour) =>
-                `${prefix}${"*".repeat(inner.length)}${lastFour}`
-            )}
-          </pre> */}
         <AccountVisibilityButton account={account} />
       </div>
       <div className="space-y-4">
+        {/* <div className="flex space-x-2">
+          <button className={`btn ${true ? "btn-primary" : ""}`}>Today</button>
+          <button className={`btn ${true ? "btn-primary" : ""}`}>
+            This Week
+          </button>
+          <button className={`btn ${true ? "btn-primary" : ""}`}>
+            This Month
+          </button>
+        </div> */}
         {latestSaveTimestamp ? (
           <LastUpdated timestamp={latestSaveTimestamp} />
         ) : (

@@ -29,8 +29,8 @@ export const LastUpdated: React.FC<LastUpdatedProps> = ({ timestamp }) => {
   };
 
   return (
-    <p>
+    <pre>
       Last updated <span className="italic">{getLastUpdatedText()}</span>
-    </p>
+    </pre>
   );
 };
