@@ -6,6 +6,8 @@ import "./globals.css";
 import { AuthenticationProvider } from "@/hooks/useAuth";
 import PlausibleProvider from "next-plausible";
 import { AccountIdProvider } from "@/hooks/useAccountId";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import Providers from "./providers";
 
 const roboto = Roboto({ weight: ["400", "700"], subsets: ["latin"] });
 
@@ -39,6 +41,8 @@ export const metadata: Metadata = {
   },
 };
 
+const queryClient = new QueryClient();
+
 export default function RootLayout({
   children,
 }: {
@@ -55,9 +59,7 @@ export default function RootLayout({
         />
       </head>
       <body className={roboto.className} style={{ overflow: "unset" }}>
-        <AuthenticationProvider>
-          <AccountIdProvider>{children}</AccountIdProvider>
-        </AuthenticationProvider>
+        <Providers>{children}</Providers>
       </body>
     </html>
   );

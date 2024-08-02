@@ -7,6 +7,7 @@ import { BasicSave } from "@/lib/types";
 export default function ProphecyEggsChart({ saves }: { saves: BasicSave[] }) {
   return (
     <Chart
+      name="Prophecy Eggs"
       data={saves.map((row) => ({
         time: (row.timestamp.getTime() / 1000) as Time,
         value: row.eggs_of_prophecy,

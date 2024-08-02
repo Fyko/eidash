@@ -34,8 +34,8 @@ export default function SetupAccount({
         <h2 className="text-2xl font-bold">Your Profile</h2>
         <p>
           To begin tracking your Egg, Inc. account progress, enter your EID.
-          <SetEIDForm />
         </p>
+        <SetEIDForm />
       </div>
       <div className="space-y-4">
         <h2 className="text-2xl font-bold">Earnings Bonus</h2>

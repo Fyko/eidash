@@ -8,6 +8,7 @@ import { calculateJer } from "@/lib/math";
 export default function JerChart({ saves }: { saves: BasicSave[] }) {
   return (
     <Chart
+      name="JER"
       data={saves.map((row) => ({
         time: (row.timestamp.getTime() / 1000) as Time,
         value: calculateJer(row),

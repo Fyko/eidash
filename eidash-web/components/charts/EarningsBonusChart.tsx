@@ -8,6 +8,7 @@ import { BasicSave } from "@/lib/types";
 export default function EarningsBonusChart({ saves }: { saves: BasicSave[] }) {
   return (
     <Chart
+      name="Earnings Bonus"
       data={saves.map((row) => ({
         time: (row.timestamp.getTime() / 1000) as Time,
         value: row.computed_earnings_bonus * 100,

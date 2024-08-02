@@ -8,6 +8,7 @@ import { calculateMer } from "@/lib/math";
 export default function MerChart({ saves }: { saves: BasicSave[] }) {
   return (
     <Chart
+      name="MER"
       data={saves.map((row) => ({
         time: (row.timestamp.getTime() / 1000) as Time,
         value: calculateMer(row),
