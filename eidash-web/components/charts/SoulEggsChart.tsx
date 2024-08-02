@@ -8,6 +8,7 @@ import { BasicSave } from "@/lib/types";
 export default function SoulEggsChart({ saves }: { saves: BasicSave[] }) {
   return (
     <Chart
+      name="Soul Eggs"
       data={saves.map((row) => ({
         time: (row.timestamp.getTime() / 1000) as Time,
         value: row.soul_eggs,

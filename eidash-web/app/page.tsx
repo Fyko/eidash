@@ -1,20 +1,8 @@
 "use server";
 
-import ClothedEarningsBonusChart from "@/components/charts/ClothedEarningsBonusChart";
-import CopyUserProfileURLButton from "@/components/CopyUserProfileURLButton";
-import EarningsBonusChart from "@/components/charts/EarningsBonusChart";
-import AccountVisibilityButton from "@/components/AccountVisibilityButton";
-import ProphecyEggsChart from "@/components/charts/ProphecyEggsChart";
-import SoulEggsChart from "@/components/charts/SoulEggsChart";
 import Image from "next/image";
-import MerChart from "@/components/charts/MerChart";
-import JerChart from "@/components/charts/JerChart";
-import { LastUpdated } from "@/components/LastUpdated";
-import { fetchSaves, fetchUser } from "@/actions/user";
-import { AccountSelecter } from "@/components/AccountSelecter";
-import { APIUser } from "@/lib/types";
+import { fetchUser } from "@/actions/user";
 import Charts from "@/components/Charts";
-import { useAuth } from "@/hooks/useAuth";
 import SetupAccount from "@/components/SetupAccount";
 
 export default async function Home() {

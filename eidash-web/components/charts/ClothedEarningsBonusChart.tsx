@@ -8,6 +8,7 @@ import { BasicSave } from "@/lib/types";
 export default function EarningsBonusChart({ saves }: { saves: BasicSave[] }) {
   return (
     <Chart
+      name="Clothed Earnings Bonus"
       data={saves
         .filter((s) => typeof s.clothed_earnings_bonus === "number")
         .map((row) => ({

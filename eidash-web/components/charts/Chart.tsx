@@ -1,13 +1,14 @@
 "use client";
 
+import { useECharts } from "@kbox-labs/react-echarts";
+import { EChart } from "@kbox-labs/react-echarts";
+import { LineChart } from "echarts/charts";
+import { CanvasRenderer } from "echarts/renderers";
 import {
-  createChart,
-  ColorType,
-  AreaData,
-  Time,
-  WhitespaceData,
-  PriceLineOptions,
-} from "lightweight-charts";
+  TitleComponent,
+  TooltipComponent,
+  GridComponent,
+} from "echarts/components";
 import React, { useEffect, useRef } from "react";
 
 export const themeColors = {
@@ -56,9 +57,10 @@ export const themeColors = {
 };
 
 export interface ChartProps {
-  data: (AreaData<Time> | WhitespaceData<Time>)[];
+  data: { time: number; value: number }[];
+  name: string;
   valueFormatter?: (value: number) => string;
-  priceLines?: PriceLineOptions[];
+  priceLines?: unknown[];
   colors?: {
     CHART_BACKGROUND_COLOR?: string;
     LINE_LINE_COLOR?: string;
@@ -71,6 +73,7 @@ export interface ChartProps {
 export const Chart = (props: ChartProps) => {
   const {
     data,
+    name,
     colors: {
       CHART_BACKGROUND_COLOR: backgroundColor,
       LINE_LINE_COLOR: lineColor,
@@ -81,61 +84,150 @@ export const Chart = (props: ChartProps) => {
     priceLines,
   } = props;
 
-  const chartContainerRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const handleResize = () => {
-      chart.applyOptions({ width: chartContainerRef.current!.clientWidth });
-    };
-
-    const chart = createChart(chartContainerRef.current!, {
-      layout: {
-        background: {
-          type: ColorType.Solid,
-          color: backgroundColor ?? themeColors.DARK.CHART_BACKGROUND_COLOR,
+  return (
+    <EChart
+      use={[
+        LineChart,
+        TitleComponent,
+        TooltipComponent,
+        GridComponent,
+        CanvasRenderer,
+      ]}
+      tooltip={{
+        trigger: "axis",
+        valueFormatter: (value: number) =>
+          props.valueFormatter?.(value) ?? value.toFixed(2),
+      }}
+      group="group1"
+      style={{
+        height: "300px",
+        width: "100%",
+      }}
+      xAxis={{
+        type: "time",
+      }}
+      yAxis={{
+        type: "value",
+        scale: true,
+        axisLabel: {
+          formatter: (value: number) =>
+            props.valueFormatter?.(value) ?? value.toFixed(2),
         },
-        textColor: textColor ?? themeColors.DARK.CHART_TEXT_COLOR,
-      },
-      width: chartContainerRef.current!.clientWidth,
-      height: 300,
-      localization: {
-        priceFormatter:
-          props.valueFormatter ??
-          ((priceValue: number) => priceValue.toString()),
-        dateFormat: "yyyy-MM-dd",
-        timeFormatter: (time: number) => new Date(time * 1000).toLocaleString(),
-      },
-    });
+      }}
+      series={[
+        {
+          color: lineColor,
+          name,
+          type: "line",
+          smooth: true,
+          symbolSize: 1,
+          data: data.map(({ time, value }) => [time, value]),
+          // areaStyle: {},
+        },
+      ]}
+    />
+  );
+  // const [ref, echartsInstance] = useECharts<HTMLDivElement>({
+  //   use: [
+  //     LineChart,
+  //     TitleComponent,
+  //     TooltipComponent,
+  //     GridComponent,
+  //     CanvasRenderer,
+  //   ],
+  //   group: "group1",
+  //   style: {
+  //     height: "300px",
+  //     width: "100%",
+  //   },
+  //   xAxis: {
+  //     type: "category",
+  //     boundaryGap: false,
+  //     data: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+  //   },
+  //   yAxis: {
+  //     type: "value",
+  //   },
+  //   series: [
+  //     {
+  //       data: Array.from({ length: 40 }, () => Math.floor(Math.random() * 100)),
+  //       type: "line",
+  //       areaStyle: {},
+  //     },
+  //   ],
+  // });
 
-    const series = chart.addAreaSeries({
-      lineColor: lineColor ?? themeColors.DARK.LINE_LINE_COLOR,
-      topColor: areaTopColor ?? themeColors.DARK.AREA_TOP_COLOR,
-      bottomColor: areaBottomColor ?? themeColors.DARK.AREA_BOTTOM_COLOR,
-    });
-    series.setData(data);
-    for (const priceLine of priceLines ?? []) {
-      series.createPriceLine(priceLine);
-    }
-    chart.timeScale().applyOptions({ secondsVisible: true });
-    chart.timeScale().fitContent();
-
-    window.addEventListener("resize", handleResize);
-
-    return () => {
-      window.removeEventListener("resize", handleResize);
-
-      chart.remove();
-    };
-  }, [
-    data,
-    backgroundColor,
-    lineColor,
-    textColor,
-    areaTopColor,
-    areaBottomColor,
-    props.valueFormatter,
-    priceLines,
-  ]);
-
-  return <div className="w-full" ref={chartContainerRef} />;
+  // return <div className="w-full" ref={ref} />;
 };
+
+// export const OldChart = (props: ChartProps) => {
+//   const {
+//     data,
+//     colors: {
+//       CHART_BACKGROUND_COLOR: backgroundColor,
+//       LINE_LINE_COLOR: lineColor,
+//       CHART_TEXT_COLOR: textColor,
+//       AREA_TOP_COLOR: areaTopColor,
+//       AREA_BOTTOM_COLOR: areaBottomColor,
+//     } = {},
+//     priceLines,
+//   } = props;
+
+//   const chartContainerRef = useRef<HTMLDivElement>(null);
+
+//   useEffect(() => {
+//     const handleResize = () => {
+//       chart.applyOptions({ width: chartContainerRef.current!.clientWidth });
+//     };
+
+//     const chart = createChart(chartContainerRef.current!, {
+//       layout: {
+//         background: {
+//           type: ColorType.Solid,
+//           color: backgroundColor ?? themeColors.DARK.CHART_BACKGROUND_COLOR,
+//         },
+//         textColor: textColor ?? themeColors.DARK.CHART_TEXT_COLOR,
+//       },
+//       width: chartContainerRef.current!.clientWidth,
+//       height: 300,
+//       localization: {
+//         priceFormatter:
+//           props.valueFormatter ??
+//           ((priceValue: number) => priceValue.toString()),
+//         dateFormat: "yyyy-MM-dd",
+//         timeFormatter: (time: number) => new Date(time * 1000).toLocaleString(),
+//       },
+//     });
+
+//     const series = chart.addAreaSeries({
+//       lineColor: lineColor ?? themeColors.DARK.LINE_LINE_COLOR,
+//       topColor: areaTopColor ?? themeColors.DARK.AREA_TOP_COLOR,
+//       bottomColor: areaBottomColor ?? themeColors.DARK.AREA_BOTTOM_COLOR,
+//     });
+//     series.setData(data);
+//     for (const priceLine of priceLines ?? []) {
+//       series.createPriceLine(priceLine);
+//     }
+//     chart.timeScale().applyOptions({ secondsVisible: true });
+//     chart.timeScale().fitContent();
+
+//     window.addEventListener("resize", handleResize);
+
+//     return () => {
+//       window.removeEventListener("resize", handleResize);
+
+//       chart.remove();
+//     };
+//   }, [
+//     data,
+//     backgroundColor,
+//     lineColor,
+//     textColor,
+//     areaTopColor,
+//     areaBottomColor,
+//     props.valueFormatter,
+//     priceLines,
+//   ]);
+
+//   return <div className="w-full" ref={chartContainerRef} />;
+// };
